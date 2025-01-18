@@ -1,7 +1,5 @@
 import Joi from 'joi'
-import { ObjectId } from 'mongodb'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
-import { getDB } from '~/configs/mongodb.js'
 
 const PRODUCT_COLLECTION_NAME = 'products'
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({

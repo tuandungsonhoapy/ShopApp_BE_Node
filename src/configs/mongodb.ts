@@ -2,10 +2,10 @@ import { MongoClient, ServerApiVersion } from 'mongodb'
 import { env } from '~/configs/enviroment.js'
 import { Db } from 'mongodb'
 
-// * Khởi tạo đối tượng database
+// * Initiate a variable to store the connection instance
 let shopAppDBInstance: Db | null = null
 
-// * Khởi tạo đối tượng connection
+// * Create a new instance of MongoClient
 const mongoClient = new MongoClient(env.MONGODB_URI || '', {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -15,7 +15,7 @@ const mongoClient = new MongoClient(env.MONGODB_URI || '', {
 })
 
 export const connectDB = async () => {
-  // * Thực hiện kết đối đến mongodb
+  // * Connect to the database
   await mongoClient.connect()
 
   shopAppDBInstance = mongoClient.db(env.MONGODB_DB_NAME)

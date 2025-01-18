@@ -1,7 +1,5 @@
 import Joi from 'joi'
-import { ObjectId } from 'mongodb'
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
-import { getDB } from '~/configs/mongodb.js'
 import { orderStatus, paymentStatus } from '~/utils/constants.js'
 
 const ORDER_COLLECTION_NAME = 'orders'

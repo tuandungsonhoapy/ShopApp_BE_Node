@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 import { env } from '~/configs/enviroment.js'
 import { Request, Response } from 'express'
+import { MongoError } from 'mongodb'
 
 // Middleware xử lý lỗi tập trung trong ứng dụng Back-end
 interface Error {
@@ -30,4 +31,17 @@ export const errorHandlingMiddleware = (err: Error, req: Request, res: Response)
 
   // Trả responseError về phía Front-end
   res.status(responseError.statusCode).json(responseError)
+}
+
+export const handleThrowError = (error: unknown) => {
+  if (error instanceof Error) {
+    console.error('Validation error:', error.message)
+    throw new Error(`Validation failed: ${error.message}`)
+  } else if (error instanceof MongoError) {
+    console.error('Database error:', error.message)
+    throw new Error(`Database operation failed: ${error.message}`)
+  } else {
+    console.error('Unexpected error:', error)
+    throw new Error(`Unexpected error: ${error instanceof Error ? error.message : String(error)}`)
+  }
 }
