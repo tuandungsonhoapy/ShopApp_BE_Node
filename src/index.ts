@@ -7,6 +7,29 @@ import { closeDB, connectDB } from '~/configs/mongodb.js'
 import { env } from '~/configs/enviroment.js'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware.js'
 import { APIs_V1 } from '~/routes/v1/index.js'
+import YAML from 'yaml'
+import fs from 'fs'
+import path from 'path'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc from 'swagger-jsdoc'
+
+const options: swaggerJsdoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Swagger Cake Store',
+      version: '1.0.0'
+    }
+  },
+  apis: ['./src/routes/v1/*.ts'] // files containing annotations as above
+}
+
+const openapiSpecification = swaggerJsdoc(options)
+
+// * Load the OpenAPI document
+const file = fs.readFileSync(path.resolve('swagger.yaml'), 'utf8')
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const swaggerDocument = YAML.parse(file)
 
 const START_SERVER = () => {
   const app = express()
@@ -15,6 +38,9 @@ const START_SERVER = () => {
     res.set('Cache-Control', 'no-store')
     next()
   })
+
+  // * Serve the Swagger UI
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
   // * Configuring the app to use middlewares
   app.use(cookieParser())
