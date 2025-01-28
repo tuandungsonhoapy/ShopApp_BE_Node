@@ -175,12 +175,12 @@ router.route('/login').post(userValidation.login, userController.login)
  *           updatedAt:
  *            type: string
  *            example: 1737550282062
- *   400:
- *    description: Bad request
- *   401:
- *    description: Unauthorized
- *   404:
- *    description: Not found
+ *    400:
+ *     description: Bad request
+ *    401:
+ *     description: Unauthorized
+ *    404:
+ *     description: Not found
  */
 router.route('/register').post(userValidation.registerUser, userController.registerUser)
 

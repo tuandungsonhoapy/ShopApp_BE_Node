@@ -19,7 +19,13 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'Swagger Cake Store',
       version: '1.0.0'
-    }
+    },
+    servers: [
+      {
+        url: 'http://localhost:8081/api/v1',
+        description: 'Development server'
+      }
+    ]
   },
   apis: ['./src/routes/v1/*.ts'] // files containing annotations as above
 }
