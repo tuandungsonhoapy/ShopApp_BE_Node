@@ -1,6 +1,7 @@
 import express from 'express'
 import { categoryController } from '~/controllers/categoryController.js'
 import { categoryValidation } from '~/validations/categoryValidation.js'
+import { authMiddleware } from '~/middlewares/authMiddleware.js'
 
 const router = express.Router()
 
@@ -12,7 +13,7 @@ const router = express.Router()
  *    type: object
  *    properties:
  *     _id:
- *      type: string
+ *      type: MongoDBObjectId
  *      example: 612f3b3b7b8b3b0015b3b3b3
  *     name:
  *      type: string
@@ -60,12 +61,14 @@ const router = express.Router()
  *        items:
  *         $ref: '#/components/schemas/Category'
  *        example:
- *         - name: Bánh sinh nhật
+ *         - _id: 612f3b3b7b8b3b0015b3b3b3
+ *           name: Bánh sinh nhật
  *           description: Bánh xinh xinh chúc mừng sinh nhật
  *           createdAt: 1737550282062
  *           updatedAt: 1737550282062
  *           _destroy: false
- *         - name: Bánh mì & Bánh mặn
+ *         - _id: 612f3b3b7b8b3b0015b3b3b4
+ *           name: Bánh mì & Bánh mặn
  *           description: Bánh mì thơm ngon
  *           createdAt: 1737550282062
  *           updatedAt: 1737550282062
@@ -89,7 +92,7 @@ router.route('/').get(categoryController.getAll)
  *      required: true
  *      description: ID of the category
  *      schema:
- *       type: string
+ *       type: MongoDBObjectId
  *       example: 612f3b3b7b8b3b0015b3b3b3
  *   responses:
  *    200:
@@ -111,6 +114,8 @@ router.route('/:id').get(categoryController.getOneById)
  *   description: Create a category
  *   tags:
  *    - Categories
+ *   security:
+ *    - BearerAuth: []
  *   requestBody:
  *    required: true
  *    content:
@@ -129,7 +134,7 @@ router.route('/:id').get(categoryController.getOneById)
  *    500:
  *     description: Internal server error
  */
-router.route('/').post(categoryValidation.create, categoryController.create)
+router.route('/').post(authMiddleware.isAuthorizedAndAdmin, categoryValidation.create, categoryController.create)
 
 /**
  * @swagger
@@ -139,6 +144,8 @@ router.route('/').post(categoryValidation.create, categoryController.create)
  *   description: Update a category by id
  *   tags:
  *     - Categories
+ *   security:
+ *     - BearerAuth: []
  *   parameters:
  *     - in: path
  *       name: id
@@ -165,7 +172,7 @@ router.route('/').post(categoryValidation.create, categoryController.create)
  *     404:
  *       description: Category not found
  */
-router.route('/:id').put(categoryValidation.update, categoryController.update)
+router.route('/:id').put(authMiddleware.isAuthorizedAndAdmin, categoryValidation.update, categoryController.update)
 
 /**
  * @swagger
@@ -175,6 +182,8 @@ router.route('/:id').put(categoryValidation.update, categoryController.update)
  *    description: Delete a category by id
  *    tags:
  *      - Categories
+ *    security:
+ *      - BearerAuth: []
  *    parameters:
  *      - in: path
  *        name: id
@@ -202,6 +211,6 @@ router.route('/:id').put(categoryValidation.update, categoryController.update)
  *      500:
  *        description: Internal server error
  */
-router.route('/:id').delete(categoryController.deleteOneById)
+router.route('/:id').delete(authMiddleware.isAuthorizedAndAdmin, categoryController.deleteOneById)
 
 export const categoryRoute = router

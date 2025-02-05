@@ -6,6 +6,16 @@ const router = express.Router()
 
 /**
  * @swagger
+ * components:
+ *  securitySchemes:
+ *    bearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ */
+
+/**
+ * @swagger
  * /users/login:
  *  post:
  *   summary: Login a user

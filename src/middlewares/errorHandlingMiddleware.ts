@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import { env } from '~/configs/enviroment.js'
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { MongoError } from 'mongodb'
 
 // Middleware xử lý lỗi tập trung trong ứng dụng Back-end
@@ -16,7 +16,8 @@ interface ResponseError {
   stack?: string
 }
 
-export const errorHandlingMiddleware = (err: Error, req: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const errorHandlingMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // Status code default to 500
   if (!err.statusCode) err.statusCode = StatusCodes.INTERNAL_SERVER_ERROR
 
@@ -26,6 +27,7 @@ export const errorHandlingMiddleware = (err: Error, req: Request, res: Response)
     stack: err.stack
   }
   // console.error(responseError)
+  console.log('Error:', responseError.message)
 
   if (env.BUILD_MODE !== 'dev') delete responseError.stack
 
