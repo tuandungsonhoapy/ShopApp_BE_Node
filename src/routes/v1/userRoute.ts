@@ -194,4 +194,6 @@ router.route('/login').post(userValidation.login, userController.login)
  */
 router.route('/register').post(userValidation.registerUser, userController.registerUser)
 
+router.route('/logout').post(userController.logout)
+
 export const userRoute = router

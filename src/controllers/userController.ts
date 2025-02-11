@@ -40,7 +40,19 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
   }
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.clearCookie('accessToken')
+    res.clearCookie('refreshToken')
+
+    res.status(StatusCodes.OK).json({ message: 'Logout successfully!', isLogout: true })
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
-  registerUser
+  registerUser,
+  logout
 }
