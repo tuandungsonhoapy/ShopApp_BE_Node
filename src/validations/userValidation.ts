@@ -112,7 +112,8 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
   const validationCondition = Joi.object({
     userId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
     password: Joi.string().required().min(6).trim().strict(),
-    confirmPassword: Joi.string().required().valid(Joi.ref('password')).trim().strict()
+    confirmPassword: Joi.string().required().valid(Joi.ref('password')).trim().strict(),
+    verifyToken: Joi.string().required().trim().strict()
   })
 
   try {

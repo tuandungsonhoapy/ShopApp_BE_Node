@@ -73,7 +73,7 @@ const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
 
 const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const response = await userService.resetPassword(req.body.userId, req.body.password, req.body.confirmPassword)
+    const response = await userService.resetPassword(req.body)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {

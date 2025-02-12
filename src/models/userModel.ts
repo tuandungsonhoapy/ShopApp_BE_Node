@@ -43,7 +43,6 @@ const USER_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const INVALID_UPDATE_FIELDS = ['_id', 'email', 'username', 'createdAt']
 
 const validateData = async (data: IUser) => {

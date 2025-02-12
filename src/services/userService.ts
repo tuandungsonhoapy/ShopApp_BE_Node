@@ -153,25 +153,36 @@ const verifyOTP = async (userId: string, otp: string) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'OTP code is incorrect!')
   }
 
-  await userModel.updateOneById(user._id, { forgotPasswordOTP: '' })
+  const verifyToken = uuidv4()
 
-  return { message: 'OTP code is correct!', isCorrect: true }
+  await userModel.updateOneById(user._id, { forgotPasswordOTP: '', verifyToken })
+
+  return { message: 'OTP code is correct!', isCorrect: true, verifyToken }
 }
 
-const resetPassword = async (userId: string, password: string, confirmPassword: string) => {
-  const user = await userModel.findOneById(userId)
+const resetPassword = async (data: {
+  userId: string
+  password: string
+  confirmPassword: string
+  verifyToken: string
+}) => {
+  const user = await userModel.findOneById(data.userId)
 
   if (!user) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
   }
 
-  if (password !== confirmPassword) {
+  if (data.password !== data.confirmPassword) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Password and confirm password do not match!')
   }
 
-  const newPassword = bcryptjs.hashSync(password, 10)
+  if (user.verifyToken !== data.verifyToken) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Invalid verify token!')
+  }
 
-  await userModel.updateOneById(user._id, { password: newPassword, forgotPasswordOTP: '' })
+  const newPassword = bcryptjs.hashSync(data.password, 10)
+
+  await userModel.updateOneById(user._id, { password: newPassword, forgotPasswordOTP: '', verifyToken: '' })
 
   return { message: 'Reset password successfully!', isResetPassword: true }
 }

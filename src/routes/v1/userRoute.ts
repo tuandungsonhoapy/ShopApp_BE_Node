@@ -284,6 +284,53 @@ router.route('/forgot-password').post(userValidation.forgotPassword, userControl
  */
 router.route('/verify-otp').post(userValidation.verifyOTP, userController.verifyOTP)
 
+/**
+ * @swagger
+ * /users/reset-password:
+ *  post:
+ *    summary: Reset password
+ *    description: Reset password
+ *    tags:
+ *      - Auth
+ *    requestBody:
+ *      description: User reset password
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              userId:
+ *                type: string
+ *                required: true
+ *                example: 612f3b3b7b8b3b0015b3b3b3
+ *              password:
+ *                type: string
+ *                required: true
+ *                example: 123456
+ *              confirmPassword:
+ *                type: string
+ *                required: true
+ *                example: 123456
+ *    responses:
+ *      200:
+ *        description: Reset password successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Reset password successfully!
+ *                isResetPassword:
+ *                  type: boolean
+ *                  example: true
+ *      400:
+ *        description: Bad request
+ *      404:
+ *        description: Not found
+ */
 router.route('/reset-password').post(userValidation.resetPassword, userController.resetPassword)
 
 export const userRoute = router
