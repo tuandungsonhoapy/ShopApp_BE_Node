@@ -11,7 +11,10 @@ const mongoClient = new MongoClient(env.MONGODB_URI || '', {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true
-  }
+  },
+  connectTimeoutMS: 30000,
+  socketTimeoutMS: 45000,
+  serverSelectionTimeoutMS: 30000
 })
 
 export const connectDB = async () => {
