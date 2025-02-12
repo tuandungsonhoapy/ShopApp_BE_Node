@@ -196,4 +196,94 @@ router.route('/register').post(userValidation.registerUser, userController.regis
 
 router.route('/logout').post(userController.logout)
 
+/**
+ * @swagger
+ * /users/forgot-password:
+ *  post:
+ *    summary: Forgot password
+ *    description: Forgot password
+ *    tags:
+ *      - Auth
+ *    requestBody:
+ *      description: User forgot password
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              email:
+ *                type: string
+ *                required: true
+ *                format: email
+ *                example: tuandung@gmail.com
+ *    responses:
+ *      200:
+ *        description: Forgot password successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: OTP code has been sent to your email!
+ *                isSendOTP:
+ *                  type: boolean
+ *                  example: true
+ *                userId:
+ *                  type: string
+ *                  example: 612f3b3b7b8b3b0015b3b3b3
+ *      404:
+ *        description: Not found
+ */
+router.route('/forgot-password').post(userValidation.forgotPassword, userController.forgotPassword)
+
+/**
+ * @swagger
+ * /users/verify-otp:
+ *  post:
+ *    summary: Verify OTP
+ *    description: Verify OTP
+ *    tags:
+ *      - Auth
+ *    requestBody:
+ *      description: User verify OTP
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              userId:
+ *                type: string
+ *                required: true
+ *                example: 612f3b3b7b8b3b0015b3b3b3
+ *              otp:
+ *                type: string
+ *                required: true
+ *                example: 123456
+ *    responses:
+ *      200:
+ *        description: Verify OTP successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: OTP code is correct!
+ *                isCorrect:
+ *                  type: boolean
+ *                  example: true
+ *      400:
+ *        description: Bad request
+ *      404:
+ *        description: Not found
+ */
+router.route('/verify-otp').post(userValidation.verifyOTP, userController.verifyOTP)
+
+router.route('/reset-password').post(userValidation.resetPassword, userController.resetPassword)
+
 export const userRoute = router

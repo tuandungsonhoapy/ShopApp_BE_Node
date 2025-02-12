@@ -51,8 +51,41 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await userService.forgotPassword(req.body.email)
+
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await userService.verifyOTP(req.body.userId, req.body.otp)
+
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const response = await userService.resetPassword(req.body.userId, req.body.password, req.body.confirmPassword)
+
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
   registerUser,
-  logout
+  logout,
+  forgotPassword,
+  verifyOTP,
+  resetPassword
 }

@@ -9,6 +9,11 @@ import { IUser, IUserLogin } from '~/@types/interface.js'
 import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
+import crypto from 'crypto'
+
+function generateOTP(length = 6) {
+  return crypto.randomInt(10 ** (length - 1), 10 ** length).toString()
+}
 
 const registerUser = async (data: IUser) => {
   // * Check email has been existed
@@ -113,7 +118,68 @@ const login = async (data: IUserLogin) => {
   }
 }
 
+const forgotPassword = async (email: string) => {
+  const existedUser = await userModel.findOneByEmail(email || '')
+  if (!existedUser) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'Email does not exist!')
+  }
+
+  const forgotPasswordOTP = generateOTP()
+
+  await userModel.updateOneById(existedUser._id, { forgotPasswordOTP })
+
+  // * Send verification email
+  const customSubject = 'Cake Store: OTP code to reset your password!'
+  const htmlContent = `
+    <h4>Here is your otp code to reset your password:</h4>
+    <h2>${forgotPasswordOTP}</h2>
+    <h4 style="margin-top: 80px">XoanEmm admin!</h4>
+  `
+
+  // * Send email
+  await BrevoProvider.sendEmail(email, customSubject, htmlContent)
+
+  return { message: 'OTP code has been sent to your email!', isSendOTP: true, userId: existedUser._id }
+}
+
+const verifyOTP = async (userId: string, otp: string) => {
+  const user = await userModel.findOneById(userId)
+
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
+  }
+
+  if (user.forgotPasswordOTP !== otp) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'OTP code is incorrect!')
+  }
+
+  await userModel.updateOneById(user._id, { forgotPasswordOTP: '' })
+
+  return { message: 'OTP code is correct!', isCorrect: true }
+}
+
+const resetPassword = async (userId: string, password: string, confirmPassword: string) => {
+  const user = await userModel.findOneById(userId)
+
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
+  }
+
+  if (password !== confirmPassword) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Password and confirm password do not match!')
+  }
+
+  const newPassword = bcryptjs.hashSync(password, 10)
+
+  await userModel.updateOneById(user._id, { password: newPassword, forgotPasswordOTP: '' })
+
+  return { message: 'Reset password successfully!', isResetPassword: true }
+}
+
 export const userService = {
   registerUser,
-  login
+  login,
+  forgotPassword,
+  verifyOTP,
+  resetPassword
 }

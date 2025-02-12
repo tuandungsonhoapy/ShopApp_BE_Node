@@ -36,6 +36,7 @@ const USER_COLLECTION_SCHEMA = Joi.object({
     .default([]),
   require_2fa: Joi.boolean().default(false),
   secretKey_2fa: Joi.string(),
+  forgotPasswordOTP: Joi.string().default(null),
 
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
   updatedAt: Joi.date().timestamp('javascript').default(null),
@@ -78,10 +79,34 @@ const findOneById = async (id: string | ObjectId) => {
   }
 }
 
+const updateOneById = async (id: string | ObjectId, data: Partial<IUser>) => {
+  try {
+    INVALID_UPDATE_FIELDS.forEach((field) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (data as any)[field]
+    })
+    return await getDB()
+      .collection(USER_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: ObjectId.createFromHexString(id.toString()) },
+        {
+          $set: {
+            ...data,
+            updatedAt: new Date()
+          }
+        },
+        { returnDocument: 'after' }
+      )
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
 export const userModel = {
   USER_COLLECTION_NAME,
   USER_COLLECTION_SCHEMA,
   registerUser,
   findOneByEmail,
-  findOneById
+  findOneById,
+  updateOneById
 }

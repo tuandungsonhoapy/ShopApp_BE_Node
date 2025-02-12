@@ -15,6 +15,7 @@ export interface IUser {
   role?: string
   require_2fa?: boolean
   secretKey_2fa?: string
+  forgotPasswordOTP?: string
 }
 
 export interface IUserLogin {

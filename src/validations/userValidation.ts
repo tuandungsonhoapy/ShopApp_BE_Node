@@ -2,7 +2,7 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError.js'
-import { EMAIL_RULE, EMAIL_RULE_MESSAGE } from '~/utils/validators.js'
+import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { Request, Response, NextFunction } from 'express'
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -79,9 +79,57 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    email: Joi.string().required().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE)
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
+const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    userId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    otp: Joi.string().required().trim().strict().length(6)
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    userId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    password: Joi.string().required().min(6).trim().strict(),
+    confirmPassword: Joi.string().required().valid(Joi.ref('password')).trim().strict()
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
 export const userValidation = {
   registerUser,
   verifyAccount,
   login,
-  updateUser
+  updateUser,
+  forgotPassword,
+  verifyOTP,
+  resetPassword
 }
