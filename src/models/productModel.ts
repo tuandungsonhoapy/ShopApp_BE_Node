@@ -23,20 +23,28 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
+// const Product = mongoose.model(PRODUCT_COLLECTION_NAME, PRODUCT_COLLECTION_SCHEMA)
+
 const validateData = async (data: IProduct) => {
   return await PRODUCT_COLLECTION_SCHEMA.validateAsync(data, {
     abortEarly: false
   })
 }
 
-// Tìm tất cả sản phẩm
+// // Tìm tất cả sản phẩm
+// const getAllProducts = async () => {
+//   return await PRODUCT_COLLECTION_SCHEMA.find({ deleted: false })
+// }
 const getAllProducts = async () => {
   return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ deleted: false }).toArray()
 }
 
-// Tìm sản phẩm theo ID
+// // Tìm sản phẩm theo ID
+// const getProductById = async (id: string) => {
+//   return await PRODUCT_COLLECTION_SCHEMA.findOne({ _id: id, deleted: false })
+// }
 const getProductById = async (id: string) => {
-  if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
+  // if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()
     .collection(PRODUCT_COLLECTION_NAME)
     .findOne({ _id: new ObjectId(id), deleted: false })
@@ -50,6 +58,9 @@ const createProduct = async (data: IProduct) => {
 }
 
 // // Cập nhật sản phẩm
+// const updateProduct = async (id: string, updateData: IProduct) => {
+//   return await PRODUCT_COLLECTION_SCHEMA.findByIdAndUpdate(id, updateData, { new: true })
+// }
 const updateProduct = async (id: string, updateData: IProduct) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   await validateData(updateData)
@@ -63,6 +74,9 @@ const updateProduct = async (id: string, updateData: IProduct) => {
 }
 
 // // Xóa mềm sản phẩm
+// const deleteProduct = async (id: string) => {
+//   return await PRODUCT_COLLECTION_SCHEMA.findByIdAndUpdate(id, { deleted: true }, { new: true })
+// }
 const deleteProduct = async (id: string) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()

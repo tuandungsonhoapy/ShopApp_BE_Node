@@ -2,6 +2,69 @@ import express from 'express'
 import { productController } from '~/controllers/productsController.js'
 
 const router = express.Router()
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *     Product:
+ *      type: object
+ *      required:
+ *      - title
+ *      - price
+ *      - status
+ *      - deleted
+ *      properties:
+ *       _id:
+ *         type: string
+ *         description: The unique identifier for the product
+ *         example: "65f7c5d2d2b5f2a7c2f8b9e3"
+ *       title:
+ *         type: string
+ *         description: The title of the product
+ *         example: "Cake"
+ *       product_category_id:
+ *         type: string
+ *         description: The ID of the product category
+ *         example: "65f7c5d2d2b5f2a7c2f8b9e4"
+ *       description:
+ *         type: string
+ *         description: A detailed description of the product
+ *         example: "Delicious cake."
+ *       price:
+ *         type: number
+ *         description: The price of the product
+ *         example: 99.99
+ *       thumbnail:
+ *         type: string
+ *         description: URL of the product thumbnail
+ *         example: "https://example.com/cake-image.jpg"
+ *       status:
+ *         type: string
+ *         description: Status of the product (e.g., available, out of stock)
+ *         example: "available"
+ *       deleted:
+ *         type: boolean
+ *         description: Whether the product is deleted
+ *         example: false
+ *       stock:
+ *         type: number
+ *         description: Number of products in stock
+ *         example: 50
+ *       createdAt:
+ *         type: string
+ *         format: date-time
+ *         description: Timestamp of when the product was created
+ *         example: "2024-02-08T12:34:56.789Z"
+ *       updatedAt:
+ *         type: string
+ *         format: date-time
+ *         description: Timestamp of the update
+ *         example: "2024-02-09T14:22:33.456Z"
+ *       _destroy:
+ *         type: boolean
+ *         description: Whether to destroy
+ *         example: false
+ */
 
 /**
  * @swagger
@@ -74,8 +137,8 @@ router.post('/', productController.createProduct)
 
 /**
  * @swagger
- * /products/{id}:
- *  put:
+ * /products/edit/{id}:
+ *  patch:
  *   summary: Update a product
  *   description: Modify an existing product by ID
  *   tags:
@@ -106,7 +169,7 @@ router.patch('/edit/:id', productController.updateProduct)
 
 /**
  * @swagger
- * /products/{id}:
+ * /products/delete/{id}:
  *  delete:
  *   summary: Delete a product
  *   description: Remove a product by ID
