@@ -10,7 +10,7 @@ const PRODUCT_COLLECTION_NAME = 'products'
 
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required(),
-  product_category_id: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+  categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   description: Joi.string().required(),
   price: Joi.number().required().min(0),
   thumbnail: Joi.string(),

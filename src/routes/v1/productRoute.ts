@@ -22,7 +22,7 @@ const router = express.Router()
  *         type: string
  *         description: The title of the product
  *         example: "Cake"
- *       product_category_id:
+ *       categoryId:
  *         type: string
  *         description: The ID of the product category
  *         example: "65f7c5d2d2b5f2a7c2f8b9e4"
