@@ -24,9 +24,10 @@ const getProductById = async (req: Request, res: Response, next: NextFunction) =
 const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const thumbnail = req.file
-    let newProduct = req.body
+    const sizes = JSON.parse(req.body.sizes)
+    let newProduct = { ...req.body, sizes }
     if (thumbnail) {
-      newProduct = { ...req.body, thumbnail }
+      newProduct = { ...newProduct, thumbnail }
     }
     const product = await productService.createProduct(newProduct)
     res.status(StatusCodes.CREATED).json({ message: 'Product created successfully!', product })

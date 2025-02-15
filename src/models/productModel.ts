@@ -5,19 +5,28 @@ import Joi from 'joi'
 import { IProduct } from '~/@types/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
+import { console } from 'inspector'
 
 const PRODUCT_COLLECTION_NAME = 'products'
 
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required(),
+  code: Joi.string().required(),
   categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-  description: Joi.string().required(),
+  description: Joi.string().optional(),
   price: Joi.number().required().min(0),
+  sizes: Joi.array()
+    .items(
+      Joi.object({
+        size: Joi.string().required(),
+        stock: Joi.number().required().min(0)
+      })
+    )
+    .default([]),
   thumbnail: Joi.string(),
   images: Joi.array().items(Joi.string()).default([]),
-  status: Joi.string().valid('available'),
+  status: Joi.string().valid('available', 'unavailable').default('unavailable'),
   slug: Joi.string(),
-  stock: Joi.number().required().min(0),
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
   updateAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
@@ -36,7 +45,7 @@ const validateData = async (data: IProduct) => {
 //   return await PRODUCT_COLLECTION_SCHEMA.find({ deleted: false })
 // }
 const getAllProducts = async () => {
-  return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ deleted: false }).toArray()
+  return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ _destroy: false }).toArray()
 }
 
 // // Tìm sản phẩm theo ID

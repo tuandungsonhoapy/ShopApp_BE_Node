@@ -3,6 +3,7 @@ import ApiError from '~/utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
 import { IProduct } from '~/@types/interface.js'
 import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+import { getNextSequenceValue } from '~/models/counterModel.js'
 
 const getAllProducts = async () => {
   return await productModel.getAllProducts()
@@ -25,7 +26,13 @@ const createProduct = async (data: IProduct) => {
     )
   }
 
-  return await productModel.createProduct({ ...data, thumbnail: uploadedThumbnail })
+  const code = await getNextSequenceValue(productModel.PRODUCT_COLLECTION_NAME)
+
+  return await productModel.createProduct({
+    ...data,
+    thumbnail: uploadedThumbnail,
+    code: `PP${String(code).padStart(3, '0')}`
+  })
 }
 
 const updateProduct = async (id: string, updateData: IProduct) => {
