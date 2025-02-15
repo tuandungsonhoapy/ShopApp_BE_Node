@@ -39,15 +39,15 @@ export interface IProduct {
   categoryId?: string
   description?: string
   price: number
-  thumbnail?: string | any
+  code?: string
+  thumbnail?: string | null | any
   status?: string
   slug?: string
-  deleted?: boolean
+  sizes: Array<{
+    size: string
+    stock: number
+  }>
   stock?: number
-  createdBy: {
-    account_id: string
-    createdAt?: Date
-  }
   createdAt?: Date
   updatedAt?: Date
   _destroy?: boolean

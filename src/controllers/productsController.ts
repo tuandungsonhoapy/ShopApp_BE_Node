@@ -25,23 +25,14 @@ const getProductById = async (req: Request, res: Response, next: NextFunction) =
 
 const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.file) {
-      throw new ApiError(StatusCodes.BAD_REQUEST, 'Thumbnail image is required')
+    const thumbnail = req.file
+    const sizes = JSON.parse(req.body.sizes)
+    let newProduct = { ...req.body, sizes }
+    if (thumbnail) {
+      newProduct = { ...newProduct, thumbnail }
     }
-
-    // Upload ảnh lên Cloudinary
-    const imageUrl = await CloudinaryProvider.streamUpload(req.file.buffer, 'NapunBakary')
-
-    // Thêm URL vào dữ liệu sản phẩm
-    const productData = {
-      ...req.body,
-      thumbnail: (imageUrl as { secure_url: string }).secure_url
-    }
-
-    // Tiếp tục logic tạo sản phẩm (giả sử có service xử lý)
-    const newProduct = await productService.createProduct(productData)
-
-    res.status(StatusCodes.CREATED).json(newProduct)
+    const product = await productService.createProduct(newProduct)
+    res.status(StatusCodes.CREATED).json({ message: 'Product created successfully!', product })
   } catch (error) {
     next(error)
   }

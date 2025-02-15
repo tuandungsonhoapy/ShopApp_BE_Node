@@ -4,19 +4,28 @@ import Joi from 'joi'
 import { IProduct } from '~/@types/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
+import { console } from 'inspector'
 
 const PRODUCT_COLLECTION_NAME = 'products'
 
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required(),
+  code: Joi.string().required(),
   categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-  description: Joi.string().required(),
+  description: Joi.string().optional(),
   price: Joi.number().required().min(0),
+  sizes: Joi.array()
+    .items(
+      Joi.object({
+        size: Joi.string().required(),
+        stock: Joi.number().required().min(0)
+      })
+    )
+    .default([]),
   thumbnail: Joi.string(),
-  status: Joi.string().valid('available'),
+  images: Joi.array().items(Joi.string()).default([]),
+  status: Joi.string().valid('available', 'unavailable').default('unavailable'),
   slug: Joi.string(),
-  deleted: Joi.boolean().default(false),
-  stock: Joi.number().required().min(0),
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
   updateAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)

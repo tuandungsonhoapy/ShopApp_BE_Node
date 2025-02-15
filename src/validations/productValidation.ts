@@ -7,18 +7,19 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    title: Joi.string().required().trim().strict(),
-    description: Joi.string().optional().trim().strict(),
-    price: Joi.number().required().min(0),
-    thumbnail: Joi.string().optional().trim().strict().default(null),
+    title: Joi.string().required(),
     categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    stock: Joi.number().required().min(0),
-    status: Joi.string().valid('available').optional(),
-    deleted: Joi.boolean().default(false),
-    _destroy: Joi.boolean().default(false),
-    createdAt: Joi.date().timestamp('javascript').default(Date.now),
-    updateAt: Joi.date().timestamp('javascript').default(null),
-    slug: Joi.string().optional().trim().strict()
+    description: Joi.string().optional(),
+    price: Joi.number().required().min(0),
+    sizes: Joi.array().items(
+      Joi.object({
+        size: Joi.string().required(),
+        stock: Joi.number().required().min(0)
+      })
+    ),
+    thumbnail: Joi.any(),
+    images: Joi.array().items(Joi.any()),
+    status: Joi.string().valid('available', 'unavailable')
   })
 
   try {

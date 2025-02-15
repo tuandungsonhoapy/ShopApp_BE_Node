@@ -2,6 +2,8 @@ import { productModel } from '~/models/productModel.js'
 import ApiError from '~/utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
 import { IProduct } from '~/@types/interface.js'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+import { getNextSequenceValue } from '~/models/counterModel.js'
 
 const getAllProducts = async () => {
   return await productModel.getAllProducts()
@@ -16,10 +18,21 @@ const getProductById = async (id: string) => {
 }
 
 const createProduct = async (data: IProduct) => {
-  if (!data.title || !data.price) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, 'Title and price are required!')
+  let uploadedThumbnail = data.thumbnail
+
+  if (data.thumbnail.buffer) {
+    uploadedThumbnail = await CloudinaryProvider.streamUpload(data.thumbnail.buffer, 'NapunBakary').then(
+      (result) => (result as { secure_url: string }).secure_url
+    )
   }
-  return await productModel.createProduct(data)
+
+  const code = await getNextSequenceValue(productModel.PRODUCT_COLLECTION_NAME)
+
+  return await productModel.createProduct({
+    ...data,
+    thumbnail: uploadedThumbnail,
+    code: `PP${String(code).padStart(3, '0')}`
+  })
 }
 
 const updateProduct = async (id: string, updateData: IProduct) => {
