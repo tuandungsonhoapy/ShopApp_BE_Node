@@ -1,5 +1,6 @@
 import express from 'express'
 import { productController } from '~/controllers/productsController.js'
+import { multerMiddleware } from '~/middlewares/MulterMiddleware.js'
 
 const router = express.Router()
 /**
@@ -133,7 +134,7 @@ router.get('/:id', productController.getProductById)
  *    400:
  *      description: Invalid input
  */
-router.post('/', productController.createProduct)
+router.post('/', multerMiddleware.upload.single('thumbnail'), productController.createProduct)
 
 /**
  * @swagger

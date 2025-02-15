@@ -39,7 +39,7 @@ export interface IProduct {
   categoryId?: string
   description?: string
   price: number
-  thumbnail?: string | null
+  thumbnail?: string | null | any
   status?: string
   slug?: string
   deleted?: boolean
