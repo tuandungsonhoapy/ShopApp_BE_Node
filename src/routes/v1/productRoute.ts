@@ -1,5 +1,9 @@
 import express from 'express'
 import { productController } from '~/controllers/productsController.js'
+import { productValidation } from '~/validations/productValidation.js'
+import { authMiddleware } from '~/middlewares/authMiddleware.js'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+import { multerMiddleware } from '../../middlewares/MulterMiddleware.js'
 
 const router = express.Router()
 /**
@@ -133,7 +137,13 @@ router.get('/:id', productController.getProductById)
  *    400:
  *      description: Invalid input
  */
-router.post('/', productController.createProduct)
+router.post(
+  '/',
+  // authMiddleware.isAuthorizedAndAdmin,
+  multerMiddleware.upload.single('thumbnail'),
+  // productValidation.create,
+  productController.createProduct
+)
 
 /**
  * @swagger
@@ -165,7 +175,12 @@ router.post('/', productController.createProduct)
  *    404:
  *      description: Product not found
  */
-router.patch('/edit/:id', productController.updateProduct)
+router.patch(
+  '/edit/:id',
+  // authMiddleware.isAuthorizedAndAdmin,
+  // productValidation.update,
+  productController.updateProduct
+)
 
 /**
  * @swagger

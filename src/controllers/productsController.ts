@@ -1,79 +1,9 @@
-// import { NextFunction, Request, Response } from 'express'
-// import { productService } from '~/services/productService.js'
-
-// // Get all products
-// const getAllProducts = async (req: Request, res: Response) => {
-//   try {
-//     // const response = await
-//     res.status(200).json({ message: "products successfully"})
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error fetching products', error })
-//   }
-// }
-
-// // Get product by ID
-// const getProductById = async (req: Request, res: Response, next:NextFunction) => {
-//   try {
-//     const { id } = req.params
-//     const product = await productService.findById(id)
-
-//     res.status(200).json(product)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
-
-// // Create a new product
-// const createProduct = async (req: Request, res: Response) => {
-//   try {
-//     const newProduct = new Product(req.body)
-//     await newProduct.save()
-//     res.status(201).json(newProduct)
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error creating product', error })
-//   }
-// }
-
-// // Update product by ID
-// const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { id } = req.params
-//     const updatedProduct = await Product.findByIdAndUpdate(id, req.body, { new: true })
-//     if (!updatedProduct) {
-//       res.status(404).json({ message: 'Product not found' })
-//     }
-//     res.status(200).json(updatedProduct)
-//   } catch (error) {
-//     next(error)
-//   }
-// }
-
-// // Soft delete a product by ID
-// const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { id } = req.params;
-//     const deletedProduct = await Product.findByIdAndUpdate(
-//     id, {
-//         deleted: true,
-//         deletedTime: new Date()},
-// {
-//         new: true})
-//     if (!deletedProduct) {
-//       res.status(404).json({ message: 'Product not found' })
-//     }
-//     res.status(200).json({ message: 'Product deleted successfully', deletedProduct })
-//   } catch (error) {
-//     next(error)
-//   }
-// }
-
-// // export { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct }
-
-// export const productsController = {getAllProducts, getProductById, createProduct, updateProduct, deleteProduct}
-// ------------------------------------------------------------------------------------------------
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { productService } from '~/services/productService.js'
+// import { uploadToCloudinary } from '~/providers/CloudinaryProvider.js'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+import ApiError from '../utils/ApiError.js'
 
 const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -85,7 +15,6 @@ const getAllProducts = async (req: Request, res: Response, next: NextFunction) =
 }
 
 const getProductById = async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.params.id)
   try {
     const product = await productService.getProductById(req.params.id)
     res.status(StatusCodes.OK).json(product)
@@ -96,8 +25,23 @@ const getProductById = async (req: Request, res: Response, next: NextFunction) =
 
 const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const product = await productService.createProduct(req.body)
-    res.status(StatusCodes.CREATED).json({ message: 'Product created successfully!', product })
+    if (!req.file) {
+      throw new ApiError(StatusCodes.BAD_REQUEST, 'Thumbnail image is required')
+    }
+
+    // Upload ảnh lên Cloudinary
+    const imageUrl = await CloudinaryProvider.streamUpload(req.file.buffer, 'NapunBakary')
+
+    // Thêm URL vào dữ liệu sản phẩm
+    const productData = {
+      ...req.body,
+      thumbnail: (imageUrl as { secure_url: string }).secure_url
+    }
+
+    // Tiếp tục logic tạo sản phẩm (giả sử có service xử lý)
+    const newProduct = await productService.createProduct(productData)
+
+    res.status(StatusCodes.CREATED).json(newProduct)
   } catch (error) {
     next(error)
   }

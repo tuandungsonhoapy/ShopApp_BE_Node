@@ -1,4 +1,3 @@
-// CODE MỚI
 // import mongoose from 'mongoose'
 import { ObjectId } from 'mongodb'
 import Joi from 'joi'
@@ -23,8 +22,6 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
-// const Product = mongoose.model(PRODUCT_COLLECTION_NAME, PRODUCT_COLLECTION_SCHEMA)
-
 const validateData = async (data: IProduct) => {
   return await PRODUCT_COLLECTION_SCHEMA.validateAsync(data, {
     abortEarly: false
@@ -32,22 +29,16 @@ const validateData = async (data: IProduct) => {
 }
 
 // // Tìm tất cả sản phẩm
-// const getAllProducts = async () => {
-//   return await PRODUCT_COLLECTION_SCHEMA.find({ deleted: false })
-// }
 const getAllProducts = async () => {
-  return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ deleted: false }).toArray()
+  return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ _destroy: false }).toArray()
 }
 
 // // Tìm sản phẩm theo ID
-// const getProductById = async (id: string) => {
-//   return await PRODUCT_COLLECTION_SCHEMA.findOne({ _id: id, deleted: false })
-// }
 const getProductById = async (id: string) => {
-  // if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
+  if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()
     .collection(PRODUCT_COLLECTION_NAME)
-    .findOne({ _id: new ObjectId(id), deleted: false })
+    .findOne({ _id: new ObjectId(id), _destroy: false })
 }
 
 // Thêm sản phẩm
@@ -58,32 +49,26 @@ const createProduct = async (data: IProduct) => {
 }
 
 // // Cập nhật sản phẩm
-// const updateProduct = async (id: string, updateData: IProduct) => {
-//   return await PRODUCT_COLLECTION_SCHEMA.findByIdAndUpdate(id, updateData, { new: true })
-// }
 const updateProduct = async (id: string, updateData: IProduct) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   await validateData(updateData)
   return await getDB()
     .collection(PRODUCT_COLLECTION_NAME)
     .findOneAndUpdate(
-      { _id: new ObjectId(id), deleted: false },
+      { _id: new ObjectId(id), _destroy: false },
       { $set: { ...updateData, updatedAt: Date.now() } },
       { returnDocument: 'after' }
     )
 }
 
 // // Xóa mềm sản phẩm
-// const deleteProduct = async (id: string) => {
-//   return await PRODUCT_COLLECTION_SCHEMA.findByIdAndUpdate(id, { deleted: true }, { new: true })
-// }
 const deleteProduct = async (id: string) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()
     .collection(PRODUCT_COLLECTION_NAME)
     .findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: { deleted: true, updatedAt: Date.now() } },
+      { $set: { _destroy: true, updatedAt: Date.now() } },
       { returnDocument: 'after' }
     )
 }
