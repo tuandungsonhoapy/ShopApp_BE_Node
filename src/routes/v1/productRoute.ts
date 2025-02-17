@@ -2,7 +2,7 @@ import express from 'express'
 import { productController } from '~/controllers/productsController.js'
 import { productValidation } from '~/validations/productValidation.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
-import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+// import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
 import { multerMiddleware } from '../../middlewares/MulterMiddleware.js'
 
 const router = express.Router()
@@ -15,8 +15,9 @@ const router = express.Router()
  *      required:
  *      - title
  *      - price
- *      - status
- *      - deleted
+ *      - description
+ *      - stock
+ *      - categoryId
  *      properties:
  *       _id:
  *         type: string
@@ -46,6 +47,10 @@ const router = express.Router()
  *         type: string
  *         description: Status of the product (e.g., available, out of stock)
  *         example: "available"
+ *       slug:
+ *         type: string
+ *         description: URL of the product slug
+ *         example: "https://example"
  *       deleted:
  *         type: boolean
  *         description: Whether the product is deleted
@@ -75,7 +80,7 @@ const router = express.Router()
  * /products:
  *  get:
  *   summary: Get all products
- *   description: Retrieve a list of all products
+ *   description: Return a list of all products
  *   tags:
  *    - Products
  *   responses:
@@ -94,7 +99,7 @@ router.get('/', productController.getAllProducts)
  * /products/{id}:
  *  get:
  *   summary: Get a product by ID
- *   description: Retrieve a single product by its ID
+ *   description: Return a single product by its ID
  *   tags:
  *    - Products
  *   parameters:
@@ -139,16 +144,16 @@ router.get('/:id', productController.getProductById)
  */
 router.post(
   '/',
-  // authMiddleware.isAuthorizedAndAdmin,
+  authMiddleware.isAuthorizedAndAdmin,
   multerMiddleware.upload.single('thumbnail'),
-  // productValidation.create,
+  productValidation.create,
   productController.createProduct
 )
 
 /**
  * @swagger
  * /products/edit/{id}:
- *  patch:
+ *  put:
  *   summary: Update a product
  *   description: Modify an existing product by ID
  *   tags:
@@ -175,12 +180,7 @@ router.post(
  *    404:
  *      description: Product not found
  */
-router.patch(
-  '/edit/:id',
-  // authMiddleware.isAuthorizedAndAdmin,
-  // productValidation.update,
-  productController.updateProduct
-)
+router.put('/edit/:id', authMiddleware.isAuthorizedAndAdmin, productValidation.update, productController.updateProduct)
 
 /**
  * @swagger

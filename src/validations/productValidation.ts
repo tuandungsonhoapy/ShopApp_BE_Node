@@ -7,18 +7,12 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    title: Joi.string().required().trim().strict(),
-    description: Joi.string().optional().trim().strict(),
-    price: Joi.number().required().min(0),
-    thumbnail: Joi.string().optional().trim().strict().default(null),
-    categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    stock: Joi.number().required().min(0),
-    status: Joi.string().valid('available').optional(),
-    deleted: Joi.boolean().default(false),
-    _destroy: Joi.boolean().default(false),
-    createdAt: Joi.date().timestamp('javascript').default(Date.now),
-    updateAt: Joi.date().timestamp('javascript').default(null),
-    slug: Joi.string().optional().trim().strict()
+    title: Joi.string().trim().strict().required(),
+    description: Joi.string().trim().strict().optional(),
+    price: Joi.number().min(0).required(),
+    categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required(),
+    stock: Joi.number().min(0).required(),
+    status: Joi.string().valid('available').optional()
   })
 
   try {
@@ -32,16 +26,13 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    title: Joi.string().trim().strict(),
-    description: Joi.string().trim().strict(),
-    price: Joi.number().min(0),
-    thumbnail: Joi.string().trim().strict(),
-    categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    stock: Joi.number().min(0),
-    status: Joi.string().valid('available'),
-    deleted: Joi.boolean(),
-    _destroy: Joi.boolean(),
-    slug: Joi.string().trim().strict()
+    title: Joi.string().trim().strict().optional(),
+    description: Joi.string().trim().strict().optional(),
+    price: Joi.number().min(0).optional(),
+    thumbnail: Joi.string().trim().optional(),
+    categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).optional(),
+    stock: Joi.number().min(0).optional(),
+    status: Joi.string().valid('available').optional()
   }).min(1)
   try {
     req.body.price = Number(req.body.price)

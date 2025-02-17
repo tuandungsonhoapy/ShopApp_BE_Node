@@ -8,18 +8,20 @@ import { getDB } from '~/configs/mongodb.js'
 const PRODUCT_COLLECTION_NAME = 'products'
 
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({
-  title: Joi.string().required(),
-  categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-  description: Joi.string().required(),
-  price: Joi.number().required().min(0),
-  thumbnail: Joi.string(),
-  status: Joi.string().valid('available'),
-  slug: Joi.string(),
+  title: Joi.string().trim().strict().required(),
+  categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required(),
+  description: Joi.string().trim().strict().required(),
+  price: Joi.number().min(0).required(),
+  stock: Joi.number().min(0).required(),
+  thumbnail: Joi.string().trim().optional(),
+  status: Joi.string().valid('available').optional(),
+  slug: Joi.string().trim().optional(),
   deleted: Joi.boolean().default(false),
-  stock: Joi.number().required().min(0),
-  createdAt: Joi.date().timestamp('javascript').default(Date.now()),
-  updateAt: Joi.date().timestamp('javascript').default(null),
-  _destroy: Joi.boolean().default(false)
+  _destroy: Joi.boolean().default(false),
+  createdAt: Joi.date()
+    .timestamp('javascript')
+    .default(() => Date.now()),
+  updateAt: Joi.date().timestamp('javascript').allow(null).default(null)
 })
 
 const validateData = async (data: IProduct) => {
