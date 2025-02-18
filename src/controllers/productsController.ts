@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { productService } from '~/services/productService.js'
-// import { uploadToCloudinary } from '~/providers/CloudinaryProvider.js'
-import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
-import ApiError from '../utils/ApiError.js'
 
 const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const products = await productService.getAllProducts()
+    const { page, limit, q, categoryId } = req.query
+
+    const pageNumber = page ? parseInt(page as string, 10) : 1
+    const limitNumber = limit ? parseInt(limit as string, 10) : 10
+
+    const products = await productService.getAllProducts(pageNumber, limitNumber, q as string, categoryId as string)
     res.status(StatusCodes.OK).json(products)
   } catch (error) {
     next(error)

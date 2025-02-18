@@ -1,10 +1,10 @@
-// import mongoose from 'mongoose'
 import { ObjectId } from 'mongodb'
 import Joi from 'joi'
 import { IProduct } from '~/@types/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
-import { console } from 'inspector'
+import { skipPageNumber } from '~/utils/algorithms.js'
+import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 
 const PRODUCT_COLLECTION_NAME = 'products'
 
@@ -37,12 +37,74 @@ const validateData = async (data: IProduct) => {
   })
 }
 
-// // Tìm tất cả sản phẩm
-const getAllProducts = async () => {
-  return await getDB().collection(PRODUCT_COLLECTION_NAME).find({ _destroy: false }).toArray()
+const getAllProducts = async (page: number, limit: number, query: string, categoryId: string) => {
+  try {
+    const queryConditions = [
+      { _destroy: false },
+      {
+        $or: [
+          {
+            title: {
+              $regex: new RegExp(query, 'i')
+            }
+          },
+          {
+            description: {
+              $regex: new RegExp(query, 'i')
+            }
+          },
+          {
+            code: {
+              $regex: new RegExp(query, 'i')
+            }
+          },
+          {
+            slug: {
+              $regex: new RegExp(query, 'i')
+            }
+          },
+          {
+            status: {
+              $regex: new RegExp(query, 'i')
+            }
+          }
+        ]
+      },
+      {
+        categoryId: categoryId ? ObjectId.createFromHexString(categoryId.toString()) : { $exists: true }
+      }
+    ]
+
+    const response = (
+      await getDB()
+        .collection(PRODUCT_COLLECTION_NAME)
+        .aggregate(
+          [
+            { $match: { $and: queryConditions } },
+            { $sort: { title: 1 } },
+            {
+              $facet: {
+                // * Thread 1: Query products
+                queryProducts: [{ $skip: skipPageNumber(page, limit) }, { $limit: limit }],
+                // * Thread 2: Query number of products
+                queryNumberProducts: [{ $count: 'queryProducts' }]
+              }
+            }
+          ],
+          { collation: { locale: 'en' } }
+        )
+        .toArray()
+    )[0]
+
+    return {
+      data: response.queryProducts,
+      total: response.queryNumberProducts[0]?.queryProducts || 0
+    }
+  } catch (error) {
+    handleThrowError(error)
+  }
 }
 
-// // Tìm sản phẩm theo ID
 const getProductById = async (id: string) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()
@@ -50,14 +112,17 @@ const getProductById = async (id: string) => {
     .findOne({ _id: new ObjectId(id), _destroy: false })
 }
 
-// Thêm sản phẩm
 const createProduct = async (data: IProduct) => {
   const dataValidated = await validateData(data)
-  const newProduct = await getDB().collection(PRODUCT_COLLECTION_NAME).insertOne(dataValidated)
+  const newProduct = await getDB()
+    .collection(PRODUCT_COLLECTION_NAME)
+    .insertOne({
+      ...dataValidated,
+      categoryId: ObjectId.createFromHexString(dataValidated.categoryId.toString())
+    })
   return await getDB().collection(PRODUCT_COLLECTION_NAME).findOne({ _id: newProduct.insertedId })
 }
 
-// // Cập nhật sản phẩm
 const updateProduct = async (id: string, updateData: IProduct) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   await validateData(updateData)
@@ -70,7 +135,6 @@ const updateProduct = async (id: string, updateData: IProduct) => {
     )
 }
 
-// // Xóa mềm sản phẩm
 const deleteProduct = async (id: string) => {
   if (!OBJECT_ID_RULE.test(id)) throw new Error(OBJECT_ID_RULE_MESSAGE)
   return await getDB()

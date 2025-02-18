@@ -24,8 +24,10 @@ export const pickUser = (user: IUser) => {
   const newUser = pick(user, [
     '_id',
     'email',
+    'fullname',
     'displayName',
     'avatar',
+    'phoneNumber',
     'require_2fa',
     'is_2fa_verified',
     'role',

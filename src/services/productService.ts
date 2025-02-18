@@ -5,8 +5,8 @@ import { IProduct } from '~/@types/interface.js'
 import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
 import { getNextSequenceValue } from '~/models/counterModel.js'
 
-const getAllProducts = async () => {
-  return await productModel.getAllProducts()
+const getAllProducts = async (page: number, limit: number, query: string, categoryId: string) => {
+  return await productModel.getAllProducts(page, limit, query, categoryId)
 }
 
 const getProductById = async (id: string) => {
@@ -31,7 +31,7 @@ const createProduct = async (data: IProduct) => {
   return await productModel.createProduct({
     ...data,
     thumbnail: uploadedThumbnail,
-    code: `PP${String(code).padStart(3, '0')}`
+    code: `PP${String(code).padStart(4, '0')}`
   })
 }
 

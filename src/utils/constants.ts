@@ -20,4 +20,9 @@ export const USER_ROLES = {
   CUSTOMER: 'customer'
 }
 
+export const GENDER = {
+  MALE: 'male',
+  FEMALE: 'female'
+}
+
 export const WEB_DOMAIN = env.BUILD_MODE === 'dev' ? env.WEB_DOMAIN_DEV : env.WEB_DOMAIN_PROD

@@ -11,14 +11,10 @@ const getTokenFromRequest = (req: Request): string | null => {
   if (!token) {
     const authHeader = req.headers.authorization
 
-    console.log('authHeader', authHeader)
-
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1]
     }
   }
-
-  console.log('token', token)
 
   return token
 }
