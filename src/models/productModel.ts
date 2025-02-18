@@ -4,7 +4,7 @@ import Joi from 'joi'
 import { IProduct } from '~/@types/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
-import { console } from 'inspector'
+// import { console } from 'inspector'
 
 const PRODUCT_COLLECTION_NAME = 'products'
 

@@ -49,6 +49,6 @@ export interface IProduct {
   }>
   stock?: number
   createdAt?: Date
-  updatedAt?: Date
+  updatedAt?: Date | any | null
   _destroy?: boolean
 }

@@ -2,7 +2,7 @@ import express from 'express'
 import { productController } from '~/controllers/productsController.js'
 import { productValidation } from '~/validations/productValidation.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
-import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
+// import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
 import { multerMiddleware } from '~/middlewares/MulterMiddleware.js'
 
 const router = express.Router()
@@ -15,8 +15,11 @@ const router = express.Router()
  *      required:
  *      - title
  *      - price
+ *      - code
+ *      - categoryId
+ *      - sizes
  *      - status
- *      - deleted
+ *      - _destroy
  *      properties:
  *       _id:
  *         type: string
@@ -26,10 +29,34 @@ const router = express.Router()
  *         type: string
  *         description: The title of the product
  *         example: "Cake"
+ *       code:
+ *         type: string
+ *         description: Unique product code
+ *         example: "EXAMPLE123"
  *       categoryId:
  *         type: string
  *         description: The ID of the product category
  *         example: "65f7c5d2d2b5f2a7c2f8b9e4"
+ *       sizes:
+ *         type: array
+ *         description: Available sizes and stock
+ *         items:
+ *           type: object
+ *           properties:
+ *             size:
+ *               type: string
+ *               description: The size of the product
+ *               example: "L"
+ *             stock:
+ *               type: number
+ *               description: The stock quantity of this size
+ *               example: 20
+ *       images:
+ *         type: array
+ *         description: Additional images of the product
+ *         items:
+ *           type: string
+ *           example: "https://example.com/cake-side.jpg"
  *       description:
  *         type: string
  *         description: A detailed description of the product
@@ -46,14 +73,10 @@ const router = express.Router()
  *         type: string
  *         description: Status of the product (e.g., available, out of stock)
  *         example: "available"
- *       deleted:
- *         type: boolean
- *         description: Whether the product is deleted
- *         example: false
- *       stock:
- *         type: number
- *         description: Number of products in stock
- *         example: 50
+ *       slug:
+ *         type: string
+ *         description: SEO-friendly product slug
+ *         example: "delicious-cake"
  *       createdAt:
  *         type: string
  *         format: date-time
@@ -75,7 +98,7 @@ const router = express.Router()
  * /products:
  *  get:
  *   summary: Get all products
- *   description: Retrieve a list of all products
+ *   description: Return a list of all products
  *   tags:
  *    - Products
  *   responses:
@@ -94,7 +117,7 @@ router.get('/', productController.getAllProducts)
  * /products/{id}:
  *  get:
  *   summary: Get a product by ID
- *   description: Retrieve a single product by its ID
+ *   description: Return a single product by its ID
  *   tags:
  *    - Products
  *   parameters:
@@ -142,7 +165,7 @@ router.post('/', multerMiddleware.upload.single('thumbnail'), productController.
 /**
  * @swagger
  * /products/edit/{id}:
- *  patch:
+ *  put:
  *   summary: Update a product
  *   description: Modify an existing product by ID
  *   tags:
@@ -169,12 +192,7 @@ router.post('/', multerMiddleware.upload.single('thumbnail'), productController.
  *    404:
  *      description: Product not found
  */
-router.patch(
-  '/edit/:id',
-  // authMiddleware.isAuthorizedAndAdmin,
-  // productValidation.update,
-  productController.updateProduct
-)
+router.put('/edit/:id', productValidation.update, productController.updateProduct)
 
 /**
  * @swagger
@@ -197,6 +215,6 @@ router.patch(
  *    404:
  *      description: Product not found
  */
-router.delete('/delete/:id', productController.deleteProduct)
+router.delete('/delete/:id', authMiddleware.isAuthorizedAndAdmin, productController.deleteProduct)
 
 export const productRoute = router
