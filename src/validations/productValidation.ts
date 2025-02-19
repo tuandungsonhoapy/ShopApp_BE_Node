@@ -7,19 +7,18 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    title: Joi.string().required(),
+    title: Joi.string().trim().required(),
     categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    description: Joi.string().optional(),
+    description: Joi.string().trim().optional(),
     price: Joi.number().required().min(0),
-    sizes: Joi.array().items(
-      Joi.object({
-        size: Joi.string().required(),
-        stock: Joi.number().required().min(0)
-      })
-    ),
-    thumbnail: Joi.any(),
-    images: Joi.array().items(Joi.any()),
-    status: Joi.string().valid('available', 'unavailable')
+    sizes: Joi.array()
+      .items(
+        Joi.object({
+          size: Joi.string().required(),
+          stock: Joi.number().required().min(0)
+        })
+      )
+      .default([])
   })
 
   try {
@@ -33,16 +32,20 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    title: Joi.string().trim().strict(),
-    description: Joi.string().trim().strict(),
+    title: Joi.string().trim(),
+    description: Joi.string().trim(),
     price: Joi.number().min(0),
-    thumbnail: Joi.string().trim().strict(),
     categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    stock: Joi.number().min(0),
-    status: Joi.string().valid('available'),
-    deleted: Joi.boolean(),
-    _destroy: Joi.boolean(),
-    slug: Joi.string().trim().strict()
+    sizes: Joi.array().items(
+      Joi.object({
+        size: Joi.string().required(),
+        stock: Joi.number().required().min(0)
+      })
+    ),
+    thumbnail: Joi.string().trim(),
+    images: Joi.array().items(Joi.string().trim()),
+    status: Joi.string().valid('available', 'unavailable'),
+    slug: Joi.string().trim()
   }).min(1)
   try {
     req.body.price = Number(req.body.price)

@@ -41,6 +41,7 @@ const createProduct = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.params.id)
   try {
     const product = await productService.updateProduct(req.params.id, req.body)
     res.status(StatusCodes.OK).json({ message: 'Product updated successfully!', product })
