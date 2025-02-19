@@ -91,6 +91,10 @@ const router = express.Router()
  *         type: boolean
  *         description: Whether to destroy
  *         example: false
+ *       category:
+ *         type: array
+ *         items:
+ *           $ref: '#/components/schemas/Category'
  */
 
 /**
@@ -101,6 +105,36 @@ const router = express.Router()
  *   description: Return a list of all products
  *   tags:
  *    - Products
+ *   parameters:
+ *    - in: query
+ *      name: page
+ *      schema:
+ *        type: integer
+ *        minimum: 1
+ *        default: 1
+ *      required: false
+ *      description: The page number
+ *    - in: query
+ *      name: limit
+ *      schema:
+ *        type: integer
+ *        minimum: 1
+ *        default: 10
+ *      required: false
+ *      description: The number of items per page
+ *    - in: query
+ *      name: q
+ *      schema:
+ *        type: string
+ *        default: ""
+ *      required: false
+ *      description: Search for products by title
+ *    - in: query
+ *      name: categoryId
+ *      schema:
+ *        type: string
+ *      required: false
+ *      description: Filter products by category ID
  *   responses:
  *    200:
  *      description: A list of products
@@ -147,6 +181,8 @@ router.get('/:id', productController.getProductById)
  *   description: Add a new product to the database
  *   tags:
  *    - Products
+ *   security:
+ *    - BearerAuth: []
  *   requestBody:
  *    description: Product data
  *    required: true
@@ -170,6 +206,8 @@ router.post('/', multerMiddleware.upload.single('thumbnail'), productController.
  *   description: Modify an existing product by ID
  *   tags:
  *    - Products
+ *   security:
+ *     - BearerAuth: []
  *   parameters:
  *    - in: path
  *      name: id

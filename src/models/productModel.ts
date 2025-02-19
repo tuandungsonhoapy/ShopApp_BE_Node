@@ -83,6 +83,14 @@ const getAllProducts = async (page: number, limit: number, query: string, catego
             { $match: { $and: queryConditions } },
             { $sort: { title: 1 } },
             {
+              $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'category'
+              }
+            },
+            {
               $facet: {
                 // * Thread 1: Query products
                 queryProducts: [{ $skip: skipPageNumber(page, limit) }, { $limit: limit }],
