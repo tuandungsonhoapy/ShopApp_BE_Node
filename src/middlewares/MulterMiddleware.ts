@@ -2,7 +2,7 @@ import multer from 'multer'
 import { ALLOW_COMMON_FILE_TYPES, LIMIT_COMMON_FILE_SIZE } from '~/utils/validators.js'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError.js'
-import { Request } from 'express'
+import { Request, RequestHandler } from 'express'
 
 const storage = multer.memoryStorage()
 

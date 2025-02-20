@@ -27,12 +27,28 @@ const getProductById = async (req: Request, res: Response, next: NextFunction) =
 
 const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const thumbnail = req.file
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined
+    // const thumbnail = req.file
+    const thumbnail = files?.thumbnail ? files.thumbnail[0] : undefined
+    console.log(req.file)
+    // const images = req.files
+    const images = files?.images || []
+    console.log(images)
     const sizes = JSON.parse(req.body.sizes)
-    let newProduct = { ...req.body, sizes }
+    let newProduct = { ...req.body, sizes, images, thumbnail }
+
     if (thumbnail) {
       newProduct = { ...newProduct, thumbnail }
     }
+
+    if (images) {
+      newProduct = { ...newProduct, images }
+    }
+    console.log(newProduct)
+
+    // if (imagesUpload) {
+    //   newProduct = { ...newProduct, imagesUpload }
+    // }
     const product = await productService.createProduct(newProduct)
     res.status(StatusCodes.CREATED).json({ message: 'Product created successfully!', product })
   } catch (error) {

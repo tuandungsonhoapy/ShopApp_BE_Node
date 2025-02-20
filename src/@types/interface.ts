@@ -41,6 +41,7 @@ export interface IProduct {
   price: number
   code?: string
   thumbnail?: string | null | any
+  images: string[] | null | any
   status?: string
   slug?: string
   sizes: Array<{
