@@ -45,7 +45,7 @@ const createProduct = async (data: IProduct) => {
             (result) => (result as { secure_url: string }).secure_url
           )
         )
-    );
+    )
   }
 
   const code = await getNextSequenceValue(productModel.PRODUCT_COLLECTION_NAME)

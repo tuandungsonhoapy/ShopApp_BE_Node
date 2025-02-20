@@ -33,9 +33,9 @@ const createProduct = async (req: Request, res: Response, next: NextFunction) =>
     console.log(req.file)
     // const images = req.files
     const images = files?.images || []
-    console.log(images)
+
     const sizes = JSON.parse(req.body.sizes)
-    let newProduct = { ...req.body, sizes, images, thumbnail }
+    let newProduct = { ...req.body, sizes }
 
     if (thumbnail) {
       newProduct = { ...newProduct, thumbnail }
@@ -44,7 +44,6 @@ const createProduct = async (req: Request, res: Response, next: NextFunction) =>
     if (images) {
       newProduct = { ...newProduct, images }
     }
-    console.log(newProduct)
 
     // if (imagesUpload) {
     //   newProduct = { ...newProduct, imagesUpload }
