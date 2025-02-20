@@ -155,3 +155,30 @@ export const productModel = {
   updateProduct,
   deleteProduct
 }
+// {
+//   "title": "Bánh mì dăm bông sốt jambon",
+//   "description": "Bánh siêu ngon, tuyệt vời số một thế giới luôn. Cái này dùng để test",
+//   "price": 250000,
+//   "categoryId": "679a18d327a140eea59a9b1b",
+//   "sizes": [
+//       {
+//           "size": "S",
+//           "stock": 15
+//       },
+//       {
+//           "size": "M",
+//           "stock": 20
+//       },
+//       {
+//           "size": "L",
+//           "stock": 25
+//       }
+//   ],
+//   "status": "available",
+//   "thumbnail": "https://res.cloudinary.com/dhb6hqgak/image/upload/v1739757469/NapunBakary/mudowtu04kylprx7lydx.jpg",
+//   "code": "PP0029",
+//   "images": [],
+//   "createdAt": 1739756428727,
+//   "updateAt": null,
+//   "_destroy": false
+// }

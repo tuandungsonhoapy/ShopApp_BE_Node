@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import { IProduct } from '~/@types/interface.js'
 import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
 import { getNextSequenceValue } from '~/models/counterModel.js'
+// import { result } from 'lodash'
 
 const getAllProducts = async (page: number, limit: number, query: string, categoryId: string) => {
   return await productModel.getAllProducts(page, limit, query, categoryId)
@@ -20,10 +21,31 @@ const getProductById = async (id: string) => {
 const createProduct = async (data: IProduct) => {
   let uploadedThumbnail = data.thumbnail
 
+  // const uploadedImages = data.images
+  let uploadedImages: string[] = []
   if (data.thumbnail.buffer) {
     uploadedThumbnail = await CloudinaryProvider.streamUpload(data.thumbnail.buffer, 'NapunBakary').then(
       (result) => (result as { secure_url: string }).secure_url
     )
+  }
+
+  // if (data.images) {
+  //   data.images.map((image: { buffer: any }) => {
+  //     CloudinaryProvider.streamUpload(image.buffer, 'NapunBakary').then(
+  //       (result) => (result as { secure_url: string }).secure_url
+  //     )
+  //   })
+  // }
+  if (Array.isArray(data.images) && data.images.length > 0) {
+    uploadedImages = await Promise.all(
+      data.images
+        .filter((image) => image && image.buffer) // Chỉ upload nếu có buffer
+        .map((image) =>
+          CloudinaryProvider.streamUpload(image.buffer, 'NapunBakary').then(
+            (result) => (result as { secure_url: string }).secure_url
+          )
+        )
+    );
   }
 
   const code = await getNextSequenceValue(productModel.PRODUCT_COLLECTION_NAME)
@@ -31,7 +53,8 @@ const createProduct = async (data: IProduct) => {
   return await productModel.createProduct({
     ...data,
     thumbnail: uploadedThumbnail,
-    code: `PP${String(code).padStart(4, '0')}`
+    code: `PP${String(code).padStart(4, '0')}`,
+    images: uploadedImages
   })
 }
 
