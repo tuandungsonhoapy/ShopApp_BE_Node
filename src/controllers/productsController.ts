@@ -36,9 +36,6 @@ const createProduct = async (req: Request, res: Response, next: NextFunction) =>
     console.log(images)
     const sizes = JSON.parse(req.body.sizes)
     let newProduct = { ...req.body, sizes, images, thumbnail }
-    // if (thumbnail || images) {
-    //   newProduct = { ...newProduct, thumbnail, images }
-    // }
 
     if (thumbnail) {
       newProduct = { ...newProduct, thumbnail }
