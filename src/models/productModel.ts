@@ -18,7 +18,8 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
     .items(
       Joi.object({
         size: Joi.string().required(),
-        stock: Joi.number().required().min(0)
+        stock: Joi.number().required().min(0),
+        price: Joi.number().required().min(0)
       })
     )
     .default([]),
@@ -27,7 +28,7 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   status: Joi.string().valid('available', 'unavailable').default('unavailable'),
   slug: Joi.string(),
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
-  updateAt: Joi.date().timestamp('javascript').default(null),
+  updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
 })
 

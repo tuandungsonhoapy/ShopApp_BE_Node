@@ -4,7 +4,11 @@ export interface IProduct {
   categoryId?: string
   description?: string
   price: number
-  sizes: Array<number>
+  sizes: Array<{
+    size: string
+    stock: number
+    price: number
+  }>
   thumbnail?: string | null
   images: string[] | null
   status?: string
