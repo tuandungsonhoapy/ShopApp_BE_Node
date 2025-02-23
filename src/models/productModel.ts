@@ -38,37 +38,94 @@ const validateData = async (data: IProduct) => {
   })
 }
 
+// const getAllProducts = async (page: number, limit: number, query: string, categoryId: string) => {
+//   console.log('limit', limit)
+//   try {
+//     const queryConditions = [
+//       { _destroy: false },
+//       {
+//         $or: [
+//           {
+//             title: {
+//               $regex: new RegExp(query, 'i')
+//             }
+//           },
+//           {
+//             description: {
+//               $regex: new RegExp(query, 'i')
+//             }
+//           },
+//           {
+//             code: {
+//               $regex: new RegExp(query, 'i')
+//             }
+//           },
+//           {
+//             slug: {
+//               $regex: new RegExp(query, 'i')
+//             }
+//           },
+//           {
+//             status: {
+//               $regex: new RegExp(query, 'i')
+//             }
+//           }
+//         ]
+//       },
+//       {
+//         categoryId: categoryId ? ObjectId.createFromHexString(categoryId.toString()) : { $exists: true }
+//       }
+//     ]
+
+//     const response = (
+//       await getDB()
+//         .collection(PRODUCT_COLLECTION_NAME)
+//         .aggregate(
+//           [
+//             { $match: { $and: queryConditions } },
+//             { $sort: { title: 1 } },
+//             {
+//               $lookup: {
+//                 from: 'categories',
+//                 localField: 'categoryId',
+//                 foreignField: '_id',
+//                 as: 'category'
+//               }
+//             },
+//             {
+//               $facet: {
+//                 // * Thread 1: Query products
+//                 queryProducts: [{ $skip: skipPageNumber(page, limit) }, { $limit: limit }],
+//                 // * Thread 2: Query number of products
+//                 queryNumberProducts: [{ $count: 'queryProducts' }]
+//               }
+//             }
+//           ],
+//           { collation: { locale: 'en' } }
+//         )
+//         .toArray()
+//     )[0]
+
+//     return {
+//       data: response.queryProducts,
+//       total: response.queryNumberProducts[0]?.queryProducts || 0
+//     }
+//   } catch (error) {
+//     handleThrowError(error)
+//   }
+// }
+
 const getAllProducts = async (page: number, limit: number, query: string, categoryId: string) => {
   try {
     const queryConditions = [
       { _destroy: false },
       {
         $or: [
-          {
-            title: {
-              $regex: new RegExp(query, 'i')
-            }
-          },
-          {
-            description: {
-              $regex: new RegExp(query, 'i')
-            }
-          },
-          {
-            code: {
-              $regex: new RegExp(query, 'i')
-            }
-          },
-          {
-            slug: {
-              $regex: new RegExp(query, 'i')
-            }
-          },
-          {
-            status: {
-              $regex: new RegExp(query, 'i')
-            }
-          }
+          { title: { $regex: new RegExp(query, 'i') } },
+          { description: { $regex: new RegExp(query, 'i') } },
+          { code: { $regex: new RegExp(query, 'i') } },
+          { slug: { $regex: new RegExp(query, 'i') } },
+          { status: { $regex: new RegExp(query, 'i') } }
         ]
       },
       {
@@ -76,32 +133,46 @@ const getAllProducts = async (page: number, limit: number, query: string, catego
       }
     ]
 
+    // Chuyển đổi page và limit thành số nguyên hoặc gán giá trị hợp lệ
+    const pageNumber = Number.isInteger(page) ? Number(page) : undefined
+    const limitNumber = Number.isInteger(limit) ? Number(limit) : undefined
+
+    // Xây dựng pipeline
+    const pipeline: any[] = [
+      { $match: { $and: queryConditions } },
+      { $sort: { title: 1 } },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category'
+        }
+      }
+    ]
+
+    // Nếu có page và limit thì thêm phân trang
+    if (pageNumber !== undefined && limitNumber !== undefined) {
+      pipeline.push({
+        $facet: {
+          queryProducts: [{ $skip: skipPageNumber(pageNumber, limitNumber) }, { $limit: limitNumber }],
+          queryNumberProducts: [{ $count: 'queryProducts' }]
+        }
+      })
+    } else {
+      // Nếu không có phân trang, lấy toàn bộ sản phẩm
+      pipeline.push({
+        $facet: {
+          queryProducts: [],
+          queryNumberProducts: [{ $count: 'queryProducts' }]
+        }
+      })
+    }
+
     const response = (
       await getDB()
         .collection(PRODUCT_COLLECTION_NAME)
-        .aggregate(
-          [
-            { $match: { $and: queryConditions } },
-            { $sort: { title: 1 } },
-            {
-              $lookup: {
-                from: 'categories',
-                localField: 'categoryId',
-                foreignField: '_id',
-                as: 'category'
-              }
-            },
-            {
-              $facet: {
-                // * Thread 1: Query products
-                queryProducts: [{ $skip: skipPageNumber(page, limit) }, { $limit: limit }],
-                // * Thread 2: Query number of products
-                queryNumberProducts: [{ $count: 'queryProducts' }]
-              }
-            }
-          ],
-          { collation: { locale: 'en' } }
-        )
+        .aggregate(pipeline, { collation: { locale: 'en' } })
         .toArray()
     )[0]
 

@@ -6,10 +6,12 @@ const getAllProducts = async (req: Request, res: Response, next: NextFunction) =
   try {
     const { page, limit, q, categoryId } = req.query
 
-    const pageNumber = page ? parseInt(page as string, 10) : 1
-    const limitNumber = limit ? parseInt(limit as string, 10) : 10
-
-    const products = await productService.getAllProducts(pageNumber, limitNumber, q as string, categoryId as string)
+    const products = await productService.getAllProducts(
+      parseInt(page as string, 10),
+      parseInt(limit as string, 10),
+      q as string,
+      categoryId as string
+    )
     res.status(StatusCodes.OK).json(products)
   } catch (error) {
     next(error)
