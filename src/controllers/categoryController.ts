@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { ICategory } from '~/@types/interface.js'
+import { categoryModel } from '~/models/categoryModel.js'
 import { categoryService } from '~/services/categoryService.js'
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -56,10 +57,30 @@ const deleteOneById = async (req: Request, res: Response, next: NextFunction) =>
   }
 }
 
+const getSubCategories = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const subCategories = await categoryModel.getSubCategories(req.params.parent_id)
+    res.json(subCategories)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const createCategoryTree = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const categoryTree = await categoryModel.createCategoryTree()
+    res.json(categoryTree)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const categoryController = {
   getAll,
   getOneById,
   create,
   update,
-  deleteOneById
+  deleteOneById,
+  getSubCategories,
+  createCategoryTree
 }

@@ -21,10 +21,19 @@ const deleteOneById = async (id: string) => {
   return await categoryModel.deleteOneById(id)
 }
 
+const getSubCategories = async (parentId: string) => {
+  return await categoryModel.getSubCategories(parentId)
+}
+
+const createCategoryTree = async () => {
+  return await categoryModel.createCategoryTree()
+}
 export const categoryService = {
   getAll,
   getOneById,
   create,
   update,
-  deleteOneById
+  deleteOneById,
+  getSubCategories,
+  createCategoryTree
 }

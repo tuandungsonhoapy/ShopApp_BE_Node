@@ -162,8 +162,6 @@ router.get('/:id', productController.getProductById)
  */
 router.post(
   '/',
-//   multerMiddleware.upload.single('thumbnail'),
-//   multerMiddleware.upload.array('images', 5),
   multerMiddleware.upload.fields([
     { name: 'thumbnail', maxCount: 1 },
     { name: 'images', maxCount: 5 }

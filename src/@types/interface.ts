@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb"
+
 export interface IUser {
   _id?: string
   fullname?: string
@@ -28,6 +30,7 @@ export interface IUserLogin {
 export interface ICategory {
   _id?: string
   name?: string
+  parent_id?: string | ObjectId | null
   description?: string
   createdAt?: string
   updatedAt?: string
