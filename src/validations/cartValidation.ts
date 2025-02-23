@@ -24,6 +24,37 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const updateCartItemQuantity = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    productId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    quantity: Joi.number().required().min(0),
+    size: Joi.string().required()
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
+const deleteCartItem = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    productId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    size: Joi.string().required()
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
 export const cartValidation = {
-  addToCart
+  addToCart,
+  updateCartItemQuantity,
+  deleteCartItem
 }

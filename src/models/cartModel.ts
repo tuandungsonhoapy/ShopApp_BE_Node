@@ -114,10 +114,58 @@ const getCart = async (userId: string) => {
   }
 }
 
+const updateCartItemQuantity = async (userId: string, productId: string, size: string, quantity: number) => {
+  try {
+    const cartCollection = getDB().collection(CART_COLLECTION_NAME)
+
+    // Nếu quantity <= 0, xóa sản phẩm khỏi giỏ hàng
+    if (quantity <= 0) {
+      return await deleteCartItem(userId, productId, size)
+    }
+
+    return await cartCollection.findOneAndUpdate(
+      {
+        userId: ObjectId.createFromHexString(userId),
+        'products.productId': ObjectId.createFromHexString(productId),
+        'products.size': size
+      },
+      {
+        $set: { 'products.$.quantity': quantity }
+      },
+      { returnDocument: 'after' }
+    )
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
+const deleteCartItem = async (userId: string, productId: string, size: string) => {
+  try {
+    const cartCollection = getDB().collection(CART_COLLECTION_NAME)
+
+    return await cartCollection.findOneAndUpdate(
+      { userId: ObjectId.createFromHexString(userId) },
+      {
+        $pull: {
+          products: {
+            productId: ObjectId.createFromHexString(productId),
+            size: size
+          }
+        } as any
+      },
+      { returnDocument: 'after' }
+    )
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
 export const cartModel = {
   CART_COLLECTION_NAME,
   CART_COLLECTION_SCHEMA,
   addToCart,
   findOneById,
-  getCart
+  getCart,
+  updateCartItemQuantity,
+  deleteCartItem
 }

@@ -107,4 +107,82 @@ router.post('/add-to-cart', cartValidation.addToCart, authMiddleware.isAuthorize
  */
 router.get('/get-cart', authMiddleware.isAuthorized, cartController.getCart)
 
+/**
+ * @swagger
+ * /cart/edit-cart:
+ *  put:
+ *    summary: Update cart item quantity
+ *    tags:
+ *      - Cart
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              productId:
+ *                type: string
+ *                example: 612f3b3b7b8b3b0015b3b3b3
+ *              size:
+ *                type: string
+ *                example: L
+ *              quantity:
+ *                type: number
+ *                example: 5
+ *    responses:
+ *      200:
+ *        description: Cart item quantity updated successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Cart'
+ *      400:
+ *        description: Invalid request data
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Cart item not found
+ */
+router.put('/edit-cartItem', cartValidation.updateCartItemQuantity, cartController.updateCartItemQuantity)
+
+/**
+ * @swagger
+ * /cart/delete-cart:
+ *  delete:
+ *    summary: Remove cart item
+ *    tags:
+ *      - Cart
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              productId:
+ *                type: string
+ *                example: 612f3b3b7b8b3b0015b3b3b3
+ *              size:
+ *                type: string
+ *                example: L
+ *    responses:
+ *      200:
+ *        description: Cart item removed successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Cart'
+ *      400:
+ *        description: Invalid request data
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Cart item not found
+ */
+router.delete('/delete-cartItem', cartValidation.deleteCartItem, cartController.deleteCartItem)
 export const cartRoute = router
