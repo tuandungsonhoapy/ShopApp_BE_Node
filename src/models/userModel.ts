@@ -8,6 +8,7 @@ import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 
 const USER_COLLECTION_NAME = 'users'
 const USER_COLLECTION_SCHEMA = Joi.object({
+  customerId: Joi.string().required(),
   email: Joi.string().required().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE),
   password: Joi.string().required(),
   fullname: Joi.string().required().trim().strict(),

@@ -104,9 +104,20 @@ const addToCart = async (userId: string, product: ICartItem) => {
   }
 }
 
+const getCart = async (userId: string) => {
+  try {
+    return await getDB()
+      .collection(CART_COLLECTION_NAME)
+      .findOne({ userId: ObjectId.createFromHexString(userId) })
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
 export const cartModel = {
   CART_COLLECTION_NAME,
   CART_COLLECTION_SCHEMA,
   addToCart,
-  findOneById
+  findOneById,
+  getCart
 }

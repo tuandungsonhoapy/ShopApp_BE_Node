@@ -84,4 +84,27 @@ const router = express.Router()
 
 router.post('/add-to-cart', cartValidation.addToCart, authMiddleware.isAuthorized, cartController.addToCart)
 
+/**
+ * @swagger
+ * /cart/get-cart:
+ *  get:
+ *    summary: Get cart
+ *    tags:
+ *      - Cart
+ *    security:
+ *      - bearerAuth: []
+ *    responses:
+ *      200:
+ *        description: Get cart successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Cart'
+ *      401:
+ *        description: Unauthorized
+ *      404:
+ *        description: Cart not found
+ */
+router.get('/get-cart', authMiddleware.isAuthorized, cartController.getCart)
+
 export const cartRoute = router

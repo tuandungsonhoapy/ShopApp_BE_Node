@@ -14,6 +14,19 @@ export const addToCart = async (req: Request, res: Response, next: NextFunction)
   }
 }
 
+const getCart = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { _id } = req.jwtDecoded as { _id: string }
+
+    const response = await cartService.getCart(_id)
+
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const cartController = {
-  addToCart
+  addToCart,
+  getCart
 }

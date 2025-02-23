@@ -10,6 +10,7 @@ import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
 import crypto from 'crypto'
+import { getNextSequenceValue } from '~/models/counterModel.js'
 
 function generateOTP(length = 6) {
   return crypto.randomInt(10 ** (length - 1), 10 ** length).toString()
@@ -36,12 +37,15 @@ const registerUser = async (data: IUser) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is required!')
   }
   const username = data.email.split('@')[0]
+  const customerId = await getNextSequenceValue(userModel.USER_COLLECTION_NAME)
+
   const newUser = {
     ...data,
     password: bcryptjs.hashSync(data.password, 10),
     email: data.email,
     displayName: username,
-    verifyToken: uuidv4()
+    verifyToken: uuidv4(),
+    customerId
   }
 
   const registeredUser = await userModel.registerUser(newUser as IUser)
