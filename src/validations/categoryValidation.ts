@@ -7,7 +7,11 @@ import { Request, Response, NextFunction } from 'express'
 const create = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
     name: Joi.string().required().trim().strict(),
-    description: Joi.string().optional().trim().strict()
+    description: Joi.string().optional().trim().strict(),
+    parent_id: Joi.alternatives()
+      .try(Joi.string().regex(/^[0-9a-fA-F]{24}$/), Joi.object())
+      .allow(null)
+      .default(null)
   })
 
   try {

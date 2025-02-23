@@ -134,7 +134,7 @@ router.route('/:id').get(categoryController.getOneById)
  *    500:
  *     description: Internal server error
  */
-router.route('/').post(authMiddleware.isAuthorizedAndAdmin, categoryValidation.create, categoryController.create)
+router.route('/').post(categoryValidation.create, categoryController.create)
 
 /**
  * @swagger
