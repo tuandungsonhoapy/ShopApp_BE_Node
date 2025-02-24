@@ -191,10 +191,19 @@ const resetPassword = async (data: {
   return { message: 'Reset password successfully!', isResetPassword: true }
 }
 
+const getAllUsers = async (page: number, limit: number, q: string, type: string) => {
+  const users = await userModel.getAllUsers(page, limit, q, type)
+  return {
+    users: users?.data.map((user: unknown) => pickUser(user as unknown as IUser)),
+    total: users?.total
+  }
+}
+
 export const userService = {
   registerUser,
   login,
   forgotPassword,
   verifyOTP,
-  resetPassword
+  resetPassword,
+  getAllUsers
 }

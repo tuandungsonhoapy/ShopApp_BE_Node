@@ -81,11 +81,29 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
   }
 }
 
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { page, limit, q, type } = req.query
+
+    const users = await userService.getAllUsers(
+      parseInt(page as string, 10),
+      parseInt(limit as string, 10),
+      q as string,
+      type as string
+    )
+
+    res.status(StatusCodes.OK).json(users)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
   registerUser,
   logout,
   forgotPassword,
   verifyOTP,
-  resetPassword
+  resetPassword,
+  getAllUsers
 }
