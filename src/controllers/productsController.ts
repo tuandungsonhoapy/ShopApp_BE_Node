@@ -27,7 +27,13 @@ const getProductById = async (req: Request, res: Response, next: NextFunction) =
 
 const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const thumbnail = req.file
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined
+    // const thumbnail = req.file
+    const thumbnail = files?.thumbnail ? files.thumbnail[0] : undefined
+
+    // const images = req.files
+    const images = files?.images || []
+
     const sizes = JSON.parse(req.body.sizes)
     let newProduct = { ...req.body, sizes }
     if (thumbnail) {
@@ -41,9 +47,23 @@ const createProduct = async (req: Request, res: Response, next: NextFunction) =>
 }
 
 const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.params.id)
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined
+  const thumbnail = files?.thumbnail ? files.thumbnail[0] : undefined
+  const images = files?.images || []
+
+  const sizes = JSON.parse(req.body.sizes)
+  let newProduct = { ...req.body, sizes }
+
+  if (thumbnail) {
+    newProduct = { ...newProduct, thumbnail }
+  }
+
+  if (images) {
+    newProduct = { ...newProduct, images }
+  }
+
   try {
-    const product = await productService.updateProduct(req.params.id, req.body)
+    const product = await productService.updateProduct(req.params.id, newProduct)
     res.status(StatusCodes.OK).json({ message: 'Product updated successfully!', product })
   } catch (error) {
     next(error)

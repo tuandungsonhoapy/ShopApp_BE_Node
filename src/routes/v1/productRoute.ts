@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { RequestHandler } from 'express'
 import { productController } from '~/controllers/productsController.js'
 import { productValidation } from '~/validations/productValidation.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
@@ -196,7 +196,14 @@ router.get('/:id', productController.getProductById)
  *    400:
  *      description: Invalid input
  */
-router.post('/', multerMiddleware.upload.single('thumbnail'), productController.createProduct)
+router.post(
+  '/',
+  multerMiddleware.upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'images', maxCount: 5 }
+  ]) as RequestHandler,
+  productController.createProduct
+)
 
 /**
  * @swagger
@@ -230,7 +237,15 @@ router.post('/', multerMiddleware.upload.single('thumbnail'), productController.
  *    404:
  *      description: Product not found
  */
-router.put('/edit/:id', productValidation.update, productController.updateProduct)
+router.put(
+  '/edit/:id',
+  multerMiddleware.upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'images', maxCount: 5 }
+  ]) as RequestHandler,
+  // productValidation.update,
+  productController.updateProduct
+)
 
 /**
  * @swagger
