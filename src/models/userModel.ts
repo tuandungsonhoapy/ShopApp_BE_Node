@@ -5,6 +5,7 @@ import { getDB } from '~/configs/mongodb.js'
 import { IUser } from '~/@types/interface.js'
 import { GENDER, USER_ROLES } from '~/utils/constants.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
+import { skipPageNumber } from '~/utils/algorithms.js'
 
 const USER_COLLECTION_NAME = 'users'
 const USER_COLLECTION_SCHEMA = Joi.object({
@@ -104,11 +105,76 @@ const updateOneById = async (id: string | ObjectId, data: Partial<IUser>) => {
   }
 }
 
+const getAllUsers = async (page: number, limit: number, query: string, type: string) => {
+  try {
+    const queryConditions: any[] = [
+      { _destroy: false },
+      {
+        $or: [
+          { fullname: { $regex: new RegExp(query, 'i') } },
+          { email: { $regex: new RegExp(query, 'i') } },
+          { phoneNumber: { $regex: new RegExp(query, 'i') } },
+          { address: { $regex: new RegExp(query, 'i') } },
+          { province: { $regex: new RegExp(query, 'i') } },
+          { district: { $regex: new RegExp(query, 'i') } },
+          { role: { $regex: new RegExp(query, 'i') } },
+          { displayName: { $regex: new RegExp(query, 'i') } }
+        ]
+      }
+    ]
+
+    // Nếu có type, thêm vào điều kiện lọc
+    if (type) {
+      queryConditions.push({ type })
+    }
+
+    // Chuyển đổi page và limit thành số nguyên hoặc gán giá trị hợp lệ
+    const pageNumber = Number.isInteger(page) ? Number(page) : undefined
+    const limitNumber = Number.isInteger(limit) ? Number(limit) : undefined
+
+    // Xây dựng pipeline
+    const pipeline: any[] = [{ $match: { $and: queryConditions } }, { $sort: { name: 1 } }]
+
+    // Nếu có page và limit thì thêm phân trang
+    if (pageNumber !== undefined && limitNumber !== undefined) {
+      pipeline.push({
+        $facet: {
+          queryUsers: [{ $skip: skipPageNumber(pageNumber, limitNumber) }, { $limit: limitNumber }],
+          queryNumberUsers: [{ $count: 'queryUsers' }]
+        }
+      })
+    } else {
+      // Nếu không có phân trang, lấy toàn bộ người dùng
+      pipeline.push({
+        $facet: {
+          queryUsers: [],
+          queryNumberUsers: [{ $count: 'queryUsers' }]
+        }
+      })
+    }
+
+    const response = (
+      await getDB()
+        .collection(USER_COLLECTION_NAME)
+        .aggregate(pipeline, { collation: { locale: 'en' } })
+        .toArray()
+    )[0]
+
+    return {
+      data: response.queryUsers,
+      total: response.queryNumberUsers[0]?.queryUsers || 0
+    }
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
 export const userModel = {
   USER_COLLECTION_NAME,
   USER_COLLECTION_SCHEMA,
   registerUser,
   findOneByEmail,
   findOneById,
-  updateOneById
+  updateOneById,
+  getAllUsers
 }

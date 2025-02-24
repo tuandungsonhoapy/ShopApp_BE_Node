@@ -1,5 +1,6 @@
 import express from 'express'
 import { userController } from '~/controllers/userController.js'
+import { authMiddleware } from '~/middlewares/authMiddleware.js'
 import { userValidation } from '~/validations/userValidation.js'
 
 const router = express.Router()
@@ -332,5 +333,7 @@ router.route('/verify-otp').post(userValidation.verifyOTP, userController.verify
  *        description: Not found
  */
 router.route('/reset-password').post(userValidation.resetPassword, userController.resetPassword)
+
+router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAllUsers)
 
 export const userRoute = router

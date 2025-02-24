@@ -23,6 +23,7 @@ export const pickUser = (user: IUser) => {
   if (!user) return null
   const newUser = pick(user, [
     '_id',
+    'customerId',
     'email',
     'fullname',
     'displayName',
