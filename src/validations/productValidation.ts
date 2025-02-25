@@ -10,12 +10,13 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     title: Joi.string().trim().required(),
     categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
     description: Joi.string().trim().optional(),
-    price: Joi.number().required().min(0),
+    price: Joi.number().optional().min(0),
     sizes: Joi.array()
       .items(
         Joi.object({
           size: Joi.string().required(),
-          stock: Joi.number().required().min(0)
+          stock: Joi.number().required().min(0),
+          price: Joi.number().required().min(0)
         })
       )
       .default([])

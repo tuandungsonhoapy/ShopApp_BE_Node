@@ -30,8 +30,7 @@ const getCart = async (req: Request, res: Response, next: NextFunction) => {
 const updateCartItemQuantity = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { productId, size, quantity } = req.body
-    const { userId } = req.params
-
+    const { _id: userId } = req.jwtDecoded as { _id: string }
     const updatedCart = await cartService.updateCartItemQuantity(userId, productId, size, quantity)
 
     if (!updatedCart) {
@@ -47,7 +46,7 @@ const updateCartItemQuantity = async (req: Request, res: Response, next: NextFun
 const deleteCartItem = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { productId, size } = req.body
-    const { userId } = req.params
+    const { _id: userId } = req.jwtDecoded as { _id: string }
 
     const updatedCart = await cartService.deleteCartItem(userId, productId, size)
 

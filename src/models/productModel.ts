@@ -13,7 +13,7 @@ const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   code: Joi.string().required(),
   categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
   description: Joi.string().optional(),
-  price: Joi.number().required().min(0),
+  price: Joi.number().optional().min(0),
   sizes: Joi.array()
     .items(
       Joi.object({

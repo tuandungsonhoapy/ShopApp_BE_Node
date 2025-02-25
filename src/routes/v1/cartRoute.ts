@@ -146,7 +146,12 @@ router.get('/get-cart', authMiddleware.isAuthorized, cartController.getCart)
  *      404:
  *        description: Cart item not found
  */
-router.put('/edit-cartItem', cartValidation.updateCartItemQuantity, cartController.updateCartItemQuantity)
+router.put(
+  '/edit-cart',
+  authMiddleware.isAuthorized,
+  cartValidation.updateCartItemQuantity,
+  cartController.updateCartItemQuantity
+)
 
 /**
  * @swagger
@@ -184,5 +189,5 @@ router.put('/edit-cartItem', cartValidation.updateCartItemQuantity, cartControll
  *      404:
  *        description: Cart item not found
  */
-router.delete('/delete-cartItem', cartValidation.deleteCartItem, cartController.deleteCartItem)
+router.delete('/delete-cart', authMiddleware.isAuthorized, cartValidation.deleteCartItem, cartController.deleteCartItem)
 export const cartRoute = router
