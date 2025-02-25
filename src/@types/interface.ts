@@ -38,11 +38,11 @@ export interface ICategory {
   _destroy?: boolean
 }
 export interface IProduct {
+  imagesURL?: string
   _id?: string
   title: string
   categoryId?: string
   description?: string
-  price: number
   code?: string
   thumbnail?: string | null | any
   images: string[] | null | any
@@ -51,8 +51,8 @@ export interface IProduct {
   sizes: Array<{
     size: string
     stock: number
+    price: number
   }>
-  stock?: number
   updatedAt?: Date | any | null
   _destroy?: boolean
 }

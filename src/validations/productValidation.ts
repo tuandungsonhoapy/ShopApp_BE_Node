@@ -31,26 +31,44 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-const update = async (req: Request, res: Response, next: NextFunction) => {
-  const validationCondition = Joi.object({
-    title: Joi.string().trim(),
-    description: Joi.string().trim(),
-    price: Joi.number().min(0),
-    categoryId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    sizes: Joi.array().items(
-      Joi.object({
-        size: Joi.string().required(),
-        stock: Joi.number().required().min(0)
-      })
-    ),
-    thumbnail: Joi.string().trim(),
-    images: Joi.array().items(Joi.string().trim()),
-    status: Joi.string().valid('available', 'unavailable'),
-    slug: Joi.string().trim()
-  }).min(1)
+const isJsonString = (str: any) => {
+  if (typeof str !== 'string') return false
   try {
-    req.body.price = Number(req.body.price)
-    req.body.stock = Number(req.body.stock)
+    JSON.parse(str)
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+const update = async (req: Request, res: Response, next: NextFunction) => {
+  if (isJsonString(req.body.sizes)) {
+    req.body.sizes = JSON.parse(req.body.sizes)
+  }
+
+  if (isJsonString(req.body.imagesURL)) {
+    req.body.imagesURL = JSON.parse(req.body.imagesURL)
+  }
+
+  const validationCondition = Joi.object({
+    title: Joi.string().trim().required(),
+    categoryId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    description: Joi.string().trim().optional(),
+    images: Joi.string().required(),
+    imagesURL: Joi.array().items(Joi.string()).default([]),
+    thumbnail: Joi.string(),
+    code: Joi.string().required(),
+    sizes: Joi.array()
+      .items(
+        Joi.object({
+          size: Joi.string().required(),
+          stock: Joi.number().required().min(0),
+          price: Joi.number().min(0)
+        })
+      )
+      .default([])
+  })
+  try {
     await validationCondition.validateAsync(req.body, { abortEarly: false })
     next()
   } catch (error: any) {

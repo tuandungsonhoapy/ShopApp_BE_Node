@@ -23,5 +23,19 @@ const streamUpload = (buffer: any, folderName: any) => {
     streamifier.createReadStream(buffer).pipe(stream)
   })
 }
+const deleteFile = (imageUrl: string) => {
+  return new Promise((resolve, reject) => {
+    const publicId = imageUrl.split('/').pop()?.split('.')[0] // Lấy public_id từ URL
+    if (!publicId) return reject(new Error('Invalid image URL'))
 
-export const CloudinaryProvider = { streamUpload }
+    cloudinary.uploader.destroy(publicId, (error, result) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(result)
+      }
+    })
+  })
+}
+
+export const CloudinaryProvider = { streamUpload, deleteFile }

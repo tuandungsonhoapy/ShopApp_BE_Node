@@ -239,7 +239,15 @@ router.post(
  *    404:
  *      description: Product not found
  */
-router.put('/edit/:id', productValidation.update, productController.updateProduct)
+router.put(
+  '/edit/:id',
+  multerMiddleware.upload.fields([
+    { name: 'thumbnail', maxCount: 1 },
+    { name: 'images', maxCount: 5 }
+  ]) as RequestHandler,
+  // productValidation.update,
+  productController.updateProduct
+)
 
 /**
  * @swagger
