@@ -1,8 +1,8 @@
 import { ICategory } from '~/@types/category/interface.js'
 import { categoryModel } from '~/models/categoryModel.js'
 
-const getAll = async () => {
-  return await categoryModel.getAll()
+const getAll = async (page: number, limit: number, query: string) => {
+  return await categoryModel.getAll(page, limit, query)
 }
 
 const getOneById = async (id: string) => {

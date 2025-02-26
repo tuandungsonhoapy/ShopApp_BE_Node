@@ -6,7 +6,10 @@ import { categoryService } from '~/services/categoryService.js'
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await categoryService.getAll()
+    const pageNumber = 1
+    const limitNumber = 10
+    const q = 'banh kem'
+    const result = await categoryService.getAll(pageNumber, limitNumber, q as string)
 
     res.status(StatusCodes.OK).json(result)
   } catch (error) {

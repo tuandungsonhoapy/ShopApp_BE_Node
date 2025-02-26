@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { ObjectId } from 'mongodb'
+// import { queryObjects } from 'v8'
 import { ICategory } from '~/@types/category/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
@@ -19,9 +20,36 @@ const CATEGORY_COLLECTION_SCHEMA = Joi.object({
 
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'updatedAt']
 
-const getAll = async () => {
+const getAll = async (page: number, limit: number, query: string) => {
   try {
-    return await getDB().collection(CATEGORY_COLLECTION_NAME).find().toArray()
+    const queryConditions: any = { _destroy: false }
+
+    if (query && typeof query === 'string' && query.trim() !== '') {
+      queryConditions.$or = [
+        { name: { $regex: new RegExp(query.trim(), 'i') } },
+        { description: { $regex: new RegExp(query.trim(), 'i') } }
+      ]
+    }
+
+    // Chuyển đổi page và limit thành số nguyên hợp lệ
+    const pageNumber = Number.isInteger(page) && page > 0 ? page : 1
+    const limitNumber = Number.isInteger(limit) && limit > 0 ? limit : 10
+    const skipNumber = (pageNumber - 1) * limitNumber
+
+    const categories = await getDB()
+      .collection(CATEGORY_COLLECTION_NAME)
+      .find(queryConditions)
+      .sort({ name: 1 })
+      .skip(skipNumber)
+      .limit(limitNumber)
+      .toArray()
+
+    const total = await getDB().collection(CATEGORY_COLLECTION_NAME).countDocuments(queryConditions)
+
+    return {
+      data: categories,
+      total
+    }
   } catch (error) {
     handleThrowError(error)
   }
