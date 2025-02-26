@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 import Joi from 'joi'
-import { IProduct } from '~/@types/interface.js'
+import { IProduct } from '~/@types/product/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
 import { skipPageNumber } from '~/utils/algorithms.js'

@@ -1,4 +1,4 @@
-import { ICategory } from '~/@types/interface.js'
+import { ICategory } from '~/@types/category/interface.js'
 import { categoryModel } from '~/models/categoryModel.js'
 
 const getAll = async () => {

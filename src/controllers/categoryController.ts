@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { ICategory } from '~/@types/interface.js'
+import { ICategory } from '~/@types/category/interface.js'
 import { categoryModel } from '~/models/categoryModel.js'
 import { categoryService } from '~/services/categoryService.js'
 
