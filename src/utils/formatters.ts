@@ -30,6 +30,7 @@ export const pickUser = (user: IUser) => {
     'province',
     'district',
     'address',
+    'addresses',
     'avatar',
     'phoneNumber',
     'require_2fa',

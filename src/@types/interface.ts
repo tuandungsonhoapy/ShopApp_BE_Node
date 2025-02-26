@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from 'mongodb'
 
 export interface IUser {
   _id?: string
@@ -20,6 +20,11 @@ export interface IUser {
   secretKey_2fa?: string
   forgotPasswordOTP?: string
   verifyToken?: string
+  addresses?: Array<{
+    address: string
+    province: string
+    district: string
+  }>
 }
 
 export interface IUserLogin {

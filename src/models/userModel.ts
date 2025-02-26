@@ -15,6 +15,13 @@ const USER_COLLECTION_SCHEMA = Joi.object({
   fullname: Joi.string().required().trim().strict(),
   displayName: Joi.string().required().trim().strict(),
   address: Joi.string().required().trim().strict(),
+  addresses: Joi.array().items(
+    Joi.object({
+      address: Joi.string().required().trim().strict(),
+      province: Joi.string().required().trim().strict(),
+      district: Joi.string().required().trim().strict()
+    }).default([])
+  ),
   phoneNumber: Joi.string().optional().trim().strict(),
   dateOfBirth: Joi.date().timestamp('javascript').optional(),
   avatar: Joi.string().default(null),
