@@ -36,19 +36,36 @@ const getAll = async (page: number, limit: number, query: string) => {
     const limitNumber = Number.isInteger(limit) && limit > 0 ? limit : 10
     const skipNumber = (pageNumber - 1) * limitNumber
 
-    const categories = await getDB()
+    // const categories = await getDB()
+    //   .collection(CATEGORY_COLLECTION_NAME)
+    //   .find(queryConditions)
+    //   .sort({ name: 1 })
+    //   .skip(skipNumber)
+    //   .limit(limitNumber)
+    //   .toArray()
+
+    // const total = await getDB().collection(CATEGORY_COLLECTION_NAME).countDocuments(queryConditions)
+
+    // return {
+    //   data: categories,
+    //   total
+    // }
+    const result = await getDB()
       .collection(CATEGORY_COLLECTION_NAME)
-      .find(queryConditions)
-      .sort({ name: 1 })
-      .skip(skipNumber)
-      .limit(limitNumber)
+      .aggregate([
+        { $match: queryConditions },
+        {
+          $facet: {
+            data: [{ $sort: { name: 1 } }, { $skip: skipNumber }, { $limit: limitNumber }],
+            total: [{ $count: 'count' }]
+          }
+        }
+      ])
       .toArray()
 
-    const total = await getDB().collection(CATEGORY_COLLECTION_NAME).countDocuments(queryConditions)
-
     return {
-      data: categories,
-      total
+      data: result[0].data,
+      total: result[0].total.length > 0 ? result[0].total[0].count : 0
     }
   } catch (error) {
     handleThrowError(error)
