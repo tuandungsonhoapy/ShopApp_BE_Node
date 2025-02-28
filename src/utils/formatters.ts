@@ -1,5 +1,5 @@
 import lodash from 'lodash'
-import { IUser } from '~/@types/interface.js'
+import { IUser } from '~/@types/auth/interface.js'
 
 const { pick } = lodash
 
