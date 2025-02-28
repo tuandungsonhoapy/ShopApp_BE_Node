@@ -125,6 +125,30 @@ const resetPassword = async (req: Request, res: Response, next: NextFunction) =>
   }
 }
 
+const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    old_password: Joi.string().required().min(6).trim().strict().messages({
+      'string.empty': 'Old password is required',
+      'string.min': 'Old password must be at least 6 characters long'
+    }),
+    new_password: Joi.string().required().min(6).trim().strict().messages({
+      'string.empty': 'New password is required',
+      'string.min': 'New password must be at least 6 characters long'
+    }),
+    confirm_password: Joi.string().required().valid(Joi.ref('new_password')).trim().strict().messages({
+      'any.only': 'Confirm password must match new password',
+      'string.empty': 'Confirm password is required'
+    })
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
 export const userValidation = {
   registerUser,
   verifyAccount,
@@ -132,5 +156,6 @@ export const userValidation = {
   updateUser,
   forgotPassword,
   verifyOTP,
-  resetPassword
+  resetPassword,
+  changePassword
 }

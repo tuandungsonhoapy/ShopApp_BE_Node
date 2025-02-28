@@ -5,7 +5,7 @@ import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { BrevoProvider } from '~/providers/BrevoProvider.js'
 import { pickUser } from '~/utils/formatters.js'
-import { IUser, IUserLogin } from '~/@types/interface.js'
+import { IUser, IUserLogin } from '~/@types/auth/interface.js'
 import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
@@ -199,11 +199,43 @@ const getAllUsers = async (page: number, limit: number, q: string, type: string)
   }
 }
 
+const changePasswordUser = async (
+  userId: string,
+  old_password: string,
+  new_password: string,
+  confirm_password: string
+) => {
+  if (!old_password || !new_password || !confirm_password) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Please fill all required fields')
+  }
+
+  if (new_password !== confirm_password) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'New password and confirm password do not match')
+  }
+
+  const user = await userModel.findOneById(userId)
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+  }
+
+  const isMatch = await bcryptjs.compare(old_password, user.password)
+  if (!isMatch) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Old password is incorrect')
+  }
+
+  const hashedPassword = await bcryptjs.hash(new_password, 10)
+  user.password = hashedPassword
+  await user.save()
+
+  return { message: 'Password changed successfully' }
+}
+
 export const userService = {
   registerUser,
   login,
   forgotPassword,
   verifyOTP,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  changePasswordUser
 }

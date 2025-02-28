@@ -98,6 +98,23 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const changePasswordUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { old_password, new_password, confirm_password } = req.body
+    const { _id: userId } = req.jwtDecoded as { _id: string }
+
+    if (!userId) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Unauthorized' })
+      return
+    }
+
+    const response = await userService.changePasswordUser(userId, old_password, new_password, confirm_password)
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
   registerUser,
@@ -105,5 +122,6 @@ export const userController = {
   forgotPassword,
   verifyOTP,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  changePasswordUser
 }
