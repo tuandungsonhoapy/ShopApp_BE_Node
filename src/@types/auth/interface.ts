@@ -22,6 +22,9 @@ export interface IUser {
     address: string
     province: string
     district: string
+    fullname: string
+    phoneNumber: string
+    isDefault: boolean
   }>
 }
 
