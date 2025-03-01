@@ -13,6 +13,63 @@ const router = express.Router()
  *      type: http
  *      scheme: bearer
  *      bearerFormat: JWT
+ *  schemas:
+ *    User:
+ *      type: object
+ *      properties:
+ *        _id:
+ *          type: MongoDBObjectId
+ *          example: 612f3b3b7b8b3b0015b3b3b3
+ *        email:
+ *          type: string
+ *          example: tuandung@gmail.com
+ *        displayName:
+ *          type: string
+ *          example: tuandung
+ *        avatar:
+ *          type: string
+ *          example: https://www.google.com
+ *        customerId:
+ *          type: string
+ *          example: KH0001
+ *        require_2fa:
+ *          type: boolean
+ *          example: false
+ *        role:
+ *          type: string
+ *          example: customer
+ *        isActive:
+ *          type: boolean
+ *          example: true
+ *        addresses:
+ *          type: array
+ *          items:
+ *            type: object
+ *            properties:
+ *              address:
+ *                type: string
+ *                example: 123 Nguyễn Văn Linh
+ *              province:
+ *                type: string
+ *                example: Hồ Chí Minh
+ *              district:
+ *                type: string
+ *                example: Thủ Đức
+ *              fullname:
+ *                type: string
+ *                example: Lê Anh Tuấn Dũng
+ *              phoneNumber:
+ *                type: string
+ *                example: 0987654321
+ *              isDefault:
+ *                type: boolean
+ *                example: true
+ *        createdAt:
+ *          type: string
+ *          example: 1737550282062
+ *        updatedAt:
+ *          type: string
+ *          example: 1737550282062
  */
 
 /**
@@ -335,5 +392,76 @@ router.route('/verify-otp').post(userValidation.verifyOTP, userController.verify
 router.route('/reset-password').post(userValidation.resetPassword, userController.resetPassword)
 
 router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAllUsers)
+
+/**
+ * @swagger
+ * /users:
+ *  put:
+ *    summary: Update user
+ *    description: Update user
+ *    tags:
+ *      - Auth
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      description: User update
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              displayName:
+ *                type: string
+ *                example: tuandung
+ *                required: false
+ *              fullname:
+ *                type: string
+ *                example: Lê Anh Tuấn Dũng
+ *                required: false
+ *              phoneNumber:
+ *                type: string
+ *                example: 0987654321
+ *                required: false
+ *              dateOfBirth:
+ *                type: string
+ *                example: 2000-01-01
+ *                required: false
+ *              gender:
+ *                type: string
+ *                example: male
+ *                required: false
+ *              addresses:
+ *                type: array
+ *                items:
+ *                  type: object
+ *                  properties:
+ *                    address:
+ *                      type: string
+ *                      example: 123 Nguyễn Văn Linh
+ *                    province:
+ *                      type: string
+ *                      example: Hồ Chí Minh
+ *                    district:
+ *                      type: string
+ *                      example: Thủ Đức
+ *                    fullname:
+ *                      type: string
+ *                      example: Lê Anh Tuấn Dũng
+ *                    phoneNumber:
+ *                      type: string
+ *                      example: 0987654321
+ *                    isDefault:
+ *                      type: boolean
+ *                      example: true
+ *    responses:
+ *      200:
+ *        description: Update user successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/User'
+ */
+router.route('/').put(authMiddleware.isAuthorized, userValidation.updateUser, userController.updateUser)
 
 export const userRoute = router

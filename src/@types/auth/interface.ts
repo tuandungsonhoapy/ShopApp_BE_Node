@@ -26,6 +26,9 @@ export interface IUser {
     phoneNumber: string
     isDefault: boolean
   }>
+  createdAt?: string
+  updatedAt?: string
+  _destroy?: boolean
 }
 
 export interface IUserLogin {

@@ -82,7 +82,7 @@ const router = express.Router()
  *        description: Unprocessable Entity
  */
 
-router.post('/add-to-cart', cartValidation.addToCart, authMiddleware.isAuthorized, cartController.addToCart)
+router.post('/add-to-cart', authMiddleware.isAuthorized, cartValidation.addToCart, cartController.addToCart)
 
 /**
  * @swagger

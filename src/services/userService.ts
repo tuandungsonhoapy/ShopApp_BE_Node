@@ -5,7 +5,7 @@ import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { BrevoProvider } from '~/providers/BrevoProvider.js'
 import { pickUser } from '~/utils/formatters.js'
-import { IUser, IUserLogin } from '~/@types/interface.js'
+import { IUser, IUserLogin } from '~/@types/auth/interface.js'
 import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
@@ -45,7 +45,17 @@ const registerUser = async (data: IUser) => {
     email: data.email,
     displayName: username,
     verifyToken: uuidv4(),
-    customerId
+    customerId,
+    addresses: [
+      {
+        fullname: data.fullname,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        province: data.province,
+        district: data.district,
+        isDefault: true
+      }
+    ]
   }
 
   const registeredUser = await userModel.registerUser(newUser as IUser)
@@ -199,11 +209,16 @@ const getAllUsers = async (page: number, limit: number, q: string, type: string)
   }
 }
 
+const updateUser = async (id: string, data: Partial<IUser>) => {
+  return pickUser((await userModel.updateOneById(id, data)) as unknown as IUser)
+}
+
 export const userService = {
   registerUser,
   login,
   forgotPassword,
   verifyOTP,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  updateUser
 }

@@ -19,7 +19,10 @@ const USER_COLLECTION_SCHEMA = Joi.object({
     Joi.object({
       address: Joi.string().required().trim().strict(),
       province: Joi.string().required().trim().strict(),
-      district: Joi.string().required().trim().strict()
+      district: Joi.string().required().trim().strict(),
+      fullname: Joi.string().required().trim().strict(),
+      phoneNumber: Joi.string().required().trim().strict(),
+      isDefault: Joi.boolean().default(false)
     }).default([])
   ),
   phoneNumber: Joi.string().optional().trim().strict(),

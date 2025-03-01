@@ -98,6 +98,18 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { _id } = req.jwtDecoded as { _id: string }
+
+    const response = await userService.updateUser(_id, req.body)
+
+    res.status(StatusCodes.OK).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
   registerUser,
@@ -105,5 +117,6 @@ export const userController = {
   forgotPassword,
   verifyOTP,
   resetPassword,
-  getAllUsers
+  getAllUsers,
+  updateUser
 }

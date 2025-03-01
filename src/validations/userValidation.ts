@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError.js'
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { Request, Response, NextFunction } from 'express'
+import { GENDER } from '~/utils/constants.js'
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
@@ -59,12 +60,20 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
     displayName: Joi.string().trim().strict().min(3).max(50),
-    current_password: Joi.string()
-      .min(6)
-      .trim()
-      .strict()
-      .message('Current password is required and at least 6 characters!'),
-    new_password: Joi.string().min(6).trim().strict().message('New password is required and at least 6 characters!')
+    fullname: Joi.string().trim().strict().min(3).max(50),
+    dateOfBirth: Joi.date().timestamp('javascript'),
+    gender: Joi.string().valid(GENDER.MALE, GENDER.FEMALE),
+    phoneNumber: Joi.string().trim().strict(),
+    addresses: Joi.array().items(
+      Joi.object({
+        address: Joi.string().trim().strict(),
+        province: Joi.string().trim().strict(),
+        district: Joi.string().trim().strict(),
+        fullname: Joi.string().trim().strict(),
+        phoneNumber: Joi.string().trim().strict(),
+        isDefault: Joi.boolean()
+      })
+    )
   })
 
   try {
