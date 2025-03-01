@@ -48,7 +48,7 @@ const isAuthorizedAndAdmin = async (req: Request, res: Response, next: NextFunct
       throw new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized!')
     }
 
-    const decoded = JwtProvider.verifyToken(accessToken, env.ACCESS_TOKEN_SECRET_SIGNATURE || '')
+    const decoded: any = JwtProvider.verifyToken(accessToken, env.ACCESS_TOKEN_SECRET_SIGNATURE || '')
 
     if (decoded && decoded.role !== USER_ROLES.ADMIN) {
       throw new ApiError(StatusCodes.FORBIDDEN, 'You do not have permission!')

@@ -80,9 +80,6 @@ const router = express.Router()
  *        total:
  *         type: number
  *         example: 1000000
- *        color:
- *         type: string
- *         example: Đỏ
  *        size:
  *         type: string
  *         example: L
@@ -122,9 +119,6 @@ const router = express.Router()
  *     paymentMethod:
  *      type: string
  *      example: Chuyển khoản ngân hàng
- *     userId:
- *      type: string
- *      example: 612f3b3b7b8b3b0015b3b3b4
  *     orderDetails:
  *      type: array
  *      items:
@@ -142,6 +136,12 @@ const router = express.Router()
  *        total:
  *         type: number
  *         example: 1000000
+ *        size:
+ *         type: string
+ *         example: L
+ *        note:
+ *         type: string
+ *         example: Gói quà sinh nhật
  */
 
 /**

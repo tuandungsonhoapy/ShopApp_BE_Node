@@ -5,7 +5,12 @@ import { orderService } from '~/services/orderService.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await orderService.create(req.body as Order)
+    const { _id: userId } = req.jwtDecoded as { _id: string }
+
+    const result = await orderService.create({
+      ...req.body,
+      userId
+    } as Order)
 
     res.status(StatusCodes.CREATED).json(result)
   } catch (error) {
@@ -15,7 +20,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, q, userId } = req.query
+    const { page, limit, q } = req.query
+    const { _id: userId } = req.jwtDecoded as { _id: string }
 
     const products = await orderService.getOrders(
       parseInt(page as string, 10),
