@@ -5,6 +5,76 @@ import { voucherValidation } from '~/validations/voucherValidation.js'
 
 const router = express.Router()
 /**
+ components:
+  schemas:
+    Voucher:
+      type: object
+      required:
+        - code
+        - discountType
+        - discountValue
+        - expirationDate
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the voucher
+          example: "65f12b3e9c8a4a001c3d1234"
+        code:
+          type: string
+          description: Unique voucher code
+          example: "SUMMER2025"
+        discountType:
+          type: string
+          enum: [percent, fixed]
+          description: Type of discount (percentage-based or fixed amount)
+          example: "percent"
+        discountValue:
+          type: number
+          minimum: 0
+          description: Discount value (percentage or fixed amount)
+          example: 10
+        minOrderValue:
+          type: number
+          minimum: 0
+          default: 0
+          description: Minimum order value required to apply the voucher
+          example: 500000
+        maxDiscount:
+          type: number
+          minimum: 0
+          nullable: true
+          default: null
+          description: Maximum discount amount (null if no limit)
+          example: 100000
+        expirationDate:
+          type: string
+          format: date
+          description: Expiration date of the voucher
+          example: "2025-12-31"
+        isActive:
+          type: boolean
+          default: true
+          description: Status of the voucher (active or inactive)
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Date and time when the voucher was created
+          example: "2024-03-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Date and time when the voucher was last updated
+          example: null
+        _destroy:
+          type: boolean
+          default: false
+          description: Soft delete flag (true if deleted)
+          example: false
+ */
+
+/**
  * @swagger
  * /vouchers:
  *  get:
