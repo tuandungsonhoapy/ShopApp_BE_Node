@@ -55,7 +55,7 @@ router.get('/:id', voucherController.getVoucherById)
  *      500:
  *        description: Internal server error
  */
-router.post('/', authMiddleware.isAuthorizedAndAdmin, voucherValidation.create, voucherController.createVoucher)
+router.post('/', voucherController.createVoucher)
 
 router.put('/:id', voucherController.updateVoucher)
 router.delete('/:id', voucherController.deleteVoucher)
