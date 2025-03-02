@@ -8,9 +8,6 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { pageNumber, limitNumber, q } = req.query
 
-    // const pageNumber = 1
-    // const limitNumber = 10
-    // const q = 'banh kem'
     const result = await categoryService.getAll(
       parseInt(pageNumber as string, 10),
       parseInt(limitNumber as string, 10),
