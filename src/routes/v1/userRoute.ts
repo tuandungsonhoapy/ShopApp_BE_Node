@@ -354,15 +354,15 @@ router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAll
  *          schema:
  *            type: object
  *            properties:
- *              currentPassword:
+ *              old_password:
  *                type: string
  *                required: true
  *                example: oldpassword123
- *              newPassword:
+ *              new_password:
  *                type: string
  *                required: true
  *                example: newpassword456
- *              confirmPassword:
+ *              confirm_password:
  *                type: string
  *                required: true
  *                example: newpassword456
@@ -381,12 +381,14 @@ router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAll
  *                  type: boolean
  *                  example: true
  *      400:
- *        description: Bad request (e.g., incorrect current password, mismatched new passwords)
+ *        description: Bad request (incorrect current password, mismatched new passwords)
  *      401:
  *        description: Unauthorized (user not logged in)
  *      404:
  *        description: User not found
  */
-router.route('/change-password').post(userValidation.changePassword, userController.changePasswordUser)
+router
+  .route('/change-password')
+  .post(authMiddleware.isAuthorized, userValidation.changePassword, userController.changePasswordUser)
 
 export const userRoute = router
