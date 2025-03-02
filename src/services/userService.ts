@@ -225,7 +225,7 @@ const changePasswordUser = async (
 
   const hashedPassword = await bcryptjs.hash(new_password, 10)
   user.password = hashedPassword
-  await userModel.updateOneById(userId, user.password)
+  await userModel.updateOneById(userId, { password: hashedPassword })
 
   return { message: 'Password changed successfully' }
 }
