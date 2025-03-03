@@ -464,4 +464,59 @@ router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAll
  */
 router.route('/').put(authMiddleware.isAuthorized, userValidation.updateUser, userController.updateUser)
 
+/**
+ * @swagger
+ * /users/change-password:
+ *  post:
+ *    summary: Change user password
+ *    description: Allow authenticated users to change their password
+ *    tags:
+ *      - Auth
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      description: User change password request
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              old_password:
+ *                type: string
+ *                required: true
+ *                example: oldpassword123
+ *              new_password:
+ *                type: string
+ *                required: true
+ *                example: newpassword456
+ *              confirm_password:
+ *                type: string
+ *                required: true
+ *                example: newpassword456
+ *    responses:
+ *      200:
+ *        description: Password changed successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Password changed successfully!
+ *                isPasswordChanged:
+ *                  type: boolean
+ *                  example: true
+ *      400:
+ *        description: Bad request (incorrect current password, mismatched new passwords)
+ *      401:
+ *        description: Unauthorized (user not logged in)
+ *      404:
+ *        description: User not found
+ */
+router
+  .route('/change-password')
+  .post(authMiddleware.isAuthorized, userValidation.changePassword, userController.changePasswordUser)
+
 export const userRoute = router

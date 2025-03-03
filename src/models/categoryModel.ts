@@ -31,25 +31,10 @@ const getAll = async (page: number, limit: number, query: string) => {
       ]
     }
 
-    // Chuyển đổi page và limit thành số nguyên hợp lệ
     const pageNumber = Number.isInteger(page) && page > 0 ? page : 1
     const limitNumber = Number.isInteger(limit) && limit > 0 ? limit : 10
     const skipNumber = (pageNumber - 1) * limitNumber
 
-    // const categories = await getDB()
-    //   .collection(CATEGORY_COLLECTION_NAME)
-    //   .find(queryConditions)
-    //   .sort({ name: 1 })
-    //   .skip(skipNumber)
-    //   .limit(limitNumber)
-    //   .toArray()
-
-    // const total = await getDB().collection(CATEGORY_COLLECTION_NAME).countDocuments(queryConditions)
-
-    // return {
-    //   data: categories,
-    //   total
-    // }
     const result = await getDB()
       .collection(CATEGORY_COLLECTION_NAME)
       .aggregate([

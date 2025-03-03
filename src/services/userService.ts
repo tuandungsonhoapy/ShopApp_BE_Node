@@ -213,6 +213,37 @@ const updateUser = async (id: string, data: Partial<IUser>) => {
   return pickUser((await userModel.updateOneById(id, data)) as unknown as IUser)
 }
 
+const changePasswordUser = async (
+  userId: string,
+  old_password: string,
+  new_password: string,
+  confirm_password: string
+) => {
+  if (!old_password || !new_password || !confirm_password) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Please fill all required fields')
+  }
+
+  if (new_password !== confirm_password) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'New password and confirm password do not match')
+  }
+
+  const user = await userModel.findOneById(userId)
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
+  }
+
+  const isMatch = await bcryptjs.compare(old_password, user.password)
+  if (!isMatch) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Old password is incorrect')
+  }
+
+  const hashedPassword = await bcryptjs.hash(new_password, 10)
+  user.password = hashedPassword
+  await userModel.updateOneById(userId, { password: hashedPassword })
+
+  return { message: 'Password changed successfully' }
+}
+
 export const userService = {
   registerUser,
   login,
@@ -220,5 +251,6 @@ export const userService = {
   verifyOTP,
   resetPassword,
   getAllUsers,
-  updateUser
+  updateUser,
+  changePasswordUser
 }
