@@ -44,6 +44,7 @@ const getVoucherById = async (voucherId: string) => {
 
 const updateVoucher = async (voucherId: string, updateData: IVoucher) => {
   if (!OBJECT_ID_RULE.test(voucherId)) throw new Error(OBJECT_ID_RULE_MESSAGE)
+  delete updateData._id
   const validatedData = await validateData(updateData)
 
   return await getDB()

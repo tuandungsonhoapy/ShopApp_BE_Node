@@ -233,7 +233,7 @@ router.post('/', voucherController.createVoucher)
  *      500:
  *        description: Internal server error
  */
-router.put('/:id', authMiddleware.isAuthorizedAndAdmin, voucherController.updateVoucher)
+router.put('/:id', voucherController.updateVoucher)
 
 /**
  * @swagger
