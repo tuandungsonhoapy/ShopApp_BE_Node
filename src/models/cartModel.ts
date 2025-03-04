@@ -130,9 +130,13 @@ const updateCartItemQuantity = async (userId: string, productId: string, size: s
         'products.size': size
       },
       {
-        $set: { 'products.$.quantity': quantity }
+        $set: { 'products.$[elem].quantity': quantity }
       },
-      { returnDocument: 'after' }
+      {
+        arrayFilters: [{ 'elem.productId': ObjectId.createFromHexString(productId), 'elem.size': size }],
+        upsert: false,
+        returnDocument: 'after'
+      }
     )
   } catch (error) {
     handleThrowError(error)
