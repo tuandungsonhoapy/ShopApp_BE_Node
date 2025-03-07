@@ -20,14 +20,15 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, q } = req.query
+    const { page, limit, q, status } = req.query
     const { _id: userId } = req.jwtDecoded as { _id: string }
 
     const products = await orderService.getOrders(
       parseInt(page as string, 10),
       parseInt(limit as string, 10),
       q as string,
-      userId as string
+      userId as string,
+      status as string
     )
     res.status(StatusCodes.OK).json(products)
   } catch (error) {

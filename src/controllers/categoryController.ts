@@ -6,11 +6,11 @@ import { categoryService } from '~/services/categoryService.js'
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { pageNumber, limitNumber, q } = req.query
+    const { page, limit, q } = req.query
 
     const result = await categoryService.getAll(
-      parseInt(pageNumber as string, 10),
-      parseInt(limitNumber as string, 10),
+      parseInt(page as string, 10),
+      parseInt(limit as string, 10),
       q as string
     )
 

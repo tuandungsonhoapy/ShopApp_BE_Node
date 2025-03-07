@@ -69,7 +69,7 @@ const create = async (data: Order) => {
   }
 }
 
-const getOrders = async (page: number, limit: number, query: string, userId: string) => {
+const getOrders = async (page: number, limit: number, query: string, userId: string, status: string) => {
   try {
     const queryConditions = [
       { _destroy: false },
@@ -85,6 +85,9 @@ const getOrders = async (page: number, limit: number, query: string, userId: str
       },
       {
         userId: userId ? ObjectId.createFromHexString(userId.toString()) : { $exists: true }
+      },
+      {
+        status: status ? status : { $exists: true }
       }
     ]
 

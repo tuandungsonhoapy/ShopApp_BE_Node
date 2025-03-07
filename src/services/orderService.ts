@@ -1,8 +1,8 @@
 import { Order } from '~/@types/order/interface.js'
 import { orderModel } from '~/models/orderModel.js'
 
-const getOrders = async (page: number, limit: number, query: string, userId: string) => {
-  return await orderModel.getOrders(page, limit, query, userId)
+const getOrders = async (page: number, limit: number, query: string, userId: string, status: string) => {
+  return await orderModel.getOrders(page, limit, query, userId, status)
 }
 
 // const getOneById = async (id: string) => {
