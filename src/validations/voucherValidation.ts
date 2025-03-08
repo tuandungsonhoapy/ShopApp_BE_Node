@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from 'express'
 const create = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
     code: Joi.string().required(),
+    description: Joi.string().max(500).default(''),
     discountType: Joi.string().valid('percent', 'fixed').required(),
     discountValue: Joi.number().required().min(0),
     minOrderValue: Joi.number().min(0),
@@ -26,6 +27,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 const update = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
     code: Joi.string(),
+    description: Joi.string().max(500),
     discountType: Joi.string().valid('percent', 'fixed'),
     discountValue: Joi.number().min(0),
     minOrderValue: Joi.number().min(0),
