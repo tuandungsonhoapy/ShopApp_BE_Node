@@ -20,6 +20,14 @@ const CATEGORY_COLLECTION_SCHEMA = Joi.object({
 
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'updatedAt']
 
+const getAllCategories = async () => {
+  try {
+    return await getDB().collection(CATEGORY_COLLECTION_NAME).find({ _destroy: false })
+  } catch (error) {
+    handleThrowError(error)
+  }
+}
+
 const getAll = async (page: number, limit: number, query: string) => {
   try {
     const queryConditions: any = { _destroy: false }
@@ -185,5 +193,6 @@ export const categoryModel = {
   update,
   deleteOneById,
   getSubCategories,
-  createCategoryTree
+  createCategoryTree,
+  getAllCategories
 }

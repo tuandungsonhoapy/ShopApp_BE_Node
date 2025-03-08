@@ -4,6 +4,15 @@ import { ICategory } from '~/@types/category/interface.js'
 import { categoryModel } from '~/models/categoryModel.js'
 import { categoryService } from '~/services/categoryService.js'
 
+const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await categoryService.getAllCategories()
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, limit, q } = req.query
@@ -88,5 +97,6 @@ export const categoryController = {
   update,
   deleteOneById,
   getSubCategories,
-  createCategoryTree
+  createCategoryTree,
+  getAllCategories
 }

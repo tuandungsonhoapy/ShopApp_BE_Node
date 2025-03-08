@@ -9,6 +9,7 @@ const VOUCHER_COLLECTION_NAME = 'vouchers'
 
 const VOUCHER_COLLECTION_SCHEMA = Joi.object({
   code: Joi.string().required(),
+  description: Joi.string().max(500).default(''),
   discountType: Joi.string().valid('percent', 'fixed').required(),
   discountValue: Joi.number().required().min(0),
   minOrderValue: Joi.number().min(0).default(0),
