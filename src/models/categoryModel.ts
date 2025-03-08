@@ -22,7 +22,7 @@ const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'updatedAt']
 
 const getAllCategories = async () => {
   try {
-    return await getDB().collection(CATEGORY_COLLECTION_NAME).find({ _destroy: false })
+    return await getDB().collection(CATEGORY_COLLECTION_NAME).find({ _destroy: false }).toArray()
   } catch (error) {
     handleThrowError(error)
   }
