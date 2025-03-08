@@ -14,7 +14,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     total: Joi.number().min(0).required(),
     shippingMethod: Joi.string().max(100).required(),
     shippingAddress: Joi.string().default(''),
-    trackingNumber: Joi.string().default(''),
+    trackingNumber: Joi.string().optional().default(''),
     paymentMethod: Joi.string().max(100).required(),
     orderDetails: Joi.array()
       .items(

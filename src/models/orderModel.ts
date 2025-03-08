@@ -20,7 +20,7 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   total: Joi.number().min(0).required(),
   shippingMethod: Joi.string().max(100).required(),
   shippingAddress: Joi.string().default(''),
-  trackingNumber: Joi.string().default(''),
+  trackingNumber: Joi.string().optional().default(''),
   paymentMethod: Joi.string().max(100).required(),
   shippingDate: Joi.date().timestamp('javascript').default(null),
   isActive: Joi.boolean().default(true),
