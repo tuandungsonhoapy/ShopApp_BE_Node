@@ -13,12 +13,16 @@ const VOUCHER_COLLECTION_SCHEMA = Joi.object({
   discountType: Joi.string().valid('percent', 'fixed').required(),
   discountValue: Joi.number().required().min(0),
   minOrderValue: Joi.number().min(0).default(0),
-  maxDiscount: Joi.number().min(0).allow(null).default(null),
+  maxDiscount: Joi.number().min(0).allow(null),
   expirationDate: Joi.date().iso().required(),
   isActive: Joi.boolean().default(true),
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
   updatedAt: Joi.date().timestamp('javascript').default(null),
-  _destroy: Joi.boolean().default(false)
+  _destroy: Joi.boolean().default(false),
+  usageLimit: Joi.number().allow(null).default(null),
+  usageCount: Joi.number().min(0).default(0),
+  applicableCategories: Joi.array().items(Joi.string()).default([]),
+  applicableProducts: Joi.array().items(Joi.string()).default([])
 })
 
 const validateData = async (data: IVoucher) => {

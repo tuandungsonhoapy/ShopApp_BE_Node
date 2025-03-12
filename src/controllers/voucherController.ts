@@ -27,6 +27,7 @@ const getVoucherById = async (req: Request, res: Response, next: NextFunction) =
 const createVoucher = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const voucher = await voucherService.createVoucher(req.body)
+    console.log(req.body)
     res.status(StatusCodes.CREATED).json({ message: 'Voucher created successfully!', voucher })
   } catch (error) {
     next(error)

@@ -13,12 +13,16 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     minOrderValue: Joi.number().min(0),
     maxDiscount: Joi.number().min(0).allow(null),
     expirationDate: Joi.date().iso().required(),
-    isActive: Joi.boolean()
+    isActive: Joi.boolean(),
+    usageLimit: Joi.number().min(0).allow(null).default(null), 
+    usageCount: Joi.number().min(0).default(0),
+    applicableCategories: Joi.array().items(Joi.string()).default([]),
+    applicableProducts: Joi.array().items(Joi.string()).default([])
   })
 
   try {
     await validationCondition.validateAsync(req.body, { abortEarly: false })
-    next()
+    return next()
   } catch (error: any) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
   }
@@ -33,11 +37,15 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
     minOrderValue: Joi.number().min(0),
     maxDiscount: Joi.number().min(0).allow(null),
     expirationDate: Joi.date().iso(),
-    isActive: Joi.boolean()
+    isActive: Joi.boolean(),
+    usageLimit: Joi.number().min(0).allow(null),
+    usageCount: Joi.number().min(0).default(0),
+    applicableCategories: Joi.array().items(Joi.string()).default([]),
+    applicableProducts: Joi.array().items(Joi.string()).default([])
   })
   try {
     await validationCondition.validateAsync(req.body, { abortEarly: false })
-    next()
+    return next()
   } catch (error: any) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
   }
