@@ -2,6 +2,7 @@ import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError.js'
 import { Request, Response, NextFunction } from 'express'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 // import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,10 +15,14 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     maxDiscount: Joi.number().min(0).allow(null),
     expirationDate: Joi.date().iso().required(),
     isActive: Joi.boolean(),
-    usageLimit: Joi.number().min(0).allow(null).default(null), 
+    usageLimit: Joi.number().min(0).allow(null),
     usageCount: Joi.number().min(0).default(0),
-    applicableCategories: Joi.array().items(Joi.string()).default([]),
-    applicableProducts: Joi.array().items(Joi.string()).default([])
+    applicableCategories: Joi.array()
+      .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
+      .default([]),
+    applicableProducts: Joi.array()
+      .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
+      .default([])
   })
 
   try {
@@ -30,7 +35,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const update = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    code: Joi.string(),
+    code: Joi.string().optional(),
     description: Joi.string().max(500),
     discountType: Joi.string().valid('percent', 'fixed'),
     discountValue: Joi.number().min(0),
@@ -39,9 +44,13 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
     expirationDate: Joi.date().iso(),
     isActive: Joi.boolean(),
     usageLimit: Joi.number().min(0).allow(null),
-    usageCount: Joi.number().min(0).default(0),
-    applicableCategories: Joi.array().items(Joi.string()).default([]),
-    applicableProducts: Joi.array().items(Joi.string()).default([])
+    usageCount: Joi.number().min(0),
+    applicableCategories: Joi.array()
+      .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
+      .default([]),
+    applicableProducts: Joi.array()
+      .items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
+      .default([])
   })
   try {
     await validationCondition.validateAsync(req.body, { abortEarly: false })

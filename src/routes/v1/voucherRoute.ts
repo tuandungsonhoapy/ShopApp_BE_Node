@@ -5,8 +5,9 @@ import { voucherValidation } from '~/validations/voucherValidation.js'
 
 const router = express.Router()
 /**
+ * @swagger
  * components:
- * schemas:
+ *  schemas:
  *   Voucher:
  *     type: object
  *     required:
@@ -15,15 +16,17 @@ const router = express.Router()
  *       - discountValue
  *       - expirationDate
  *     properties:
- *       id:
+ *       _id:
  *         type: string
- *         description: Unique identifier for the voucher
- *         example: "65f12b3e9c8a4a001c3d1234"
+ *         description: The unique identifier for the voucher
+ *         example: "65f8b2c4e5a7f9b123456789"
  *       code:
  *         type: string
  *         description: Unique voucher code
  *         example: "SUMMER2025"
- *       description: Description of the voucher
+ *       description:
+ *         type: string
+ *         description: Detailed description of the voucher
  *         example: "Giảm giá cho đơn hàng trên 500K"
  *       discountType:
  *         type: string
@@ -81,13 +84,13 @@ const router = express.Router()
  *       applicableCategories:
  *         type: array
  *         items:
- *          type: string
- *         example: ["electronics", "fashion"]
+ *            type: string
+ *            example: ["67b2949737b7d0fab7f203b5"]
  *       applicableProducts:
  *         type: array
  *         items:
- *          type: string
- *         example: ["product123", "product456"]
+ *            type: string
+ *            example: ["67b0b2c19f1f5fb97f386dfb"]
  */
 
 /**
@@ -108,7 +111,7 @@ const router = express.Router()
  *      500:
  *        description: Internal server error
  */
-router.get('/', voucherController.getAllVouchers)
+router.get('/', authMiddleware.isAuthorizedAndAdmin, voucherController.getAllVouchers)
 
 /**
  * @swagger
@@ -130,6 +133,10 @@ router.get('/', voucherController.getAllVouchers)
  *    responses:
  *      200:
  *        description: Voucher found and returned successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Voucher'
  *      400:
  *        description: Invalid voucher ID
  *      404:
@@ -139,7 +146,7 @@ router.get('/', voucherController.getAllVouchers)
  *      500:
  *        description: Internal server error
  */
-router.get('/:id', voucherController.getVoucherById)
+router.get('/:id', authMiddleware.isAuthorized, voucherController.getVoucherById)
 
 /**
  * @swagger
@@ -204,14 +211,14 @@ router.get('/:id', voucherController.getVoucherById)
  *                type: array
  *                items:
  *                  type: string
- *                example: ["electronics", "fashion"]
+ *                example: ["67b2949737b7d0fab7f203b5"]
  *              applicableProducts:
  *                type: array
  *                items:
  *                  type: string
- *                example: ["product123", "product456"]
+ *                example: ["67b0b2c19f1f5fb97f386dfb"]
  *    responses:
- *      200:
+ *      201:
  *        description: Voucher created successfully
  *        content:
  *          application/json:
@@ -227,22 +234,58 @@ router.get('/:id', voucherController.getVoucherById)
  *                data:
  *                  type: object
  *                  properties:
- *                    id:
+ *                    _id:
  *                      type: string
  *                      example: "65f8b2c4e5a7f9b123456789"
  *                    code:
  *                      type: string
  *                      example: "SUMMER2025"
+ *                    description:
+ *                      type: string
+ *                      example: "Discount for summer sale"
  *                    discountType:
  *                      type: string
  *                      example: "percent"
  *                    discountValue:
  *                      type: number
  *                      example: 10
+ *                    minOrderValue:
+ *                      type: number
+ *                      example: 500000
+ *                    maxDiscount:
+ *                      type: number
+ *                      example: 100000
  *                    expirationDate:
  *                      type: string
  *                      format: date-time
  *                      example: "2025-12-31T23:59:59.000Z"
+ *                    isActive:
+ *                      type: boolean
+ *                      example: true
+ *                    usageLimit:
+ *                      type: number
+ *                      example: 1000
+ *                    usageCount:
+ *                      type: number
+ *                      example: 0
+ *                    applicableCategories:
+ *                      type: array
+ *                      items:
+ *                        type: string
+ *                        example: "67b2949737b7d0fab7f203b5"
+ *                    applicableProducts:
+ *                      type: array
+ *                      items:
+ *                        type: string
+ *                        example: "67b0b2c19f1f5fb97f386dfb"
+ *                    createdAt:
+ *                        type: string
+ *                        format: date-time
+ *                        example: "2024-03-01T10:00:00.000Z"
+ *                    updatedAt:
+ *                        type: string
+ *                        format: date-time
+ *                        example: null
  *      400:
  *        description: Bad request (Validation error)
  *      401:
@@ -250,7 +293,7 @@ router.get('/:id', voucherController.getVoucherById)
  *      500:
  *        description: Internal server error
  */
-router.post('/', voucherController.createVoucher)
+router.post('/', authMiddleware.isAuthorizedAndAdmin, voucherValidation.create, voucherController.createVoucher)
 
 /**
  * @swagger

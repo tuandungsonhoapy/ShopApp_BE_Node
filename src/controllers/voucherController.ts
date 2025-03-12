@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { voucherService } from '~/services/vouchereService.js'
+import { voucherService } from '~/services/voucherService.js'
 
 const getAllVouchers = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -36,11 +36,12 @@ const createVoucher = async (req: Request, res: Response, next: NextFunction) =>
 
 const updateVoucher = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params
-    const updatedVoucher = await voucherService.updateVoucher(id, req.body)
+    const updatedVoucher = await voucherService.updateVoucher({ ...req.body, _id: req.params.id })
+
     if (!updatedVoucher) {
       res.status(StatusCodes.NOT_FOUND).json({ message: 'Voucher not found' })
     }
+
     res.status(StatusCodes.OK).json({ message: 'Voucher updated successfully!', updatedVoucher })
   } catch (error) {
     next(error)
@@ -51,9 +52,11 @@ const deleteVoucher = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { id } = req.params
     const deletedVoucher = await voucherService.deleteVoucher(id)
+
     if (!deletedVoucher) {
       res.status(StatusCodes.NOT_FOUND).json({ message: 'Voucher not found' })
     }
+
     res.status(StatusCodes.OK).json({ message: 'Voucher deleted successfully!', deletedVoucher })
   } catch (error) {
     next(error)

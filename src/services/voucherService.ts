@@ -25,38 +25,22 @@ const createVoucher = async (data: IVoucher) => {
     updatedAt: Date.now()
   })
 }
-const updateVoucher = async (id: string, updateData: IVoucher) => {
-  const existingVoucher = await voucherModel.getVoucherById(id)
-  if (!existingVoucher) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Voucher not found!')
-  }
 
-  const updatedVoucher = await voucherModel.updateVoucher(id, {
-    ...existingVoucher,
+const updateVoucher = async (updateData: IVoucher) => {
+  const updatedVoucher = await voucherModel.updateVoucher({
     ...updateData,
-    updatedAt: Date.now(),
-    code: updateData.code ?? existingVoucher.code
+    updatedAt: Date.now()
   })
+
   if (!updatedVoucher) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Voucher update failed!')
   }
+
   return updatedVoucher
 }
-const deleteVoucher = async (id: string) => {
-  const existingVoucher = await voucherModel.getVoucherById(id)
-  if (!existingVoucher) {
-    throw new ApiError(StatusCodes.NOT_FOUND, 'Voucher not found!')
-  }
 
-  const deletedVoucher = await voucherModel.updateVoucher(id, {
-    _destroy: true,
-    updatedAt: Date.now(),
-    code: '',
-    discountType: 'percent',
-    discountValue: 0,
-    minOrderValue: 0,
-    expirationDate: ''
-  })
+const deleteVoucher = async (id: string) => {
+  const deletedVoucher = await voucherModel.deleteVoucher(id)
 
   if (!deletedVoucher) {
     throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Failed to delete voucher!')
