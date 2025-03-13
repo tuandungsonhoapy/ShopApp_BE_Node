@@ -2,7 +2,7 @@ import { env } from '~/configs/enviroment.js'
 
 export const WHITELIST_DOMAINS: Array<string> = []
 
-export const orderStatus = {
+export const ORDER_STATUS = {
   PENDING: 'pending',
   PROCESSING: 'processing',
   SHIPPED: 'shipped',

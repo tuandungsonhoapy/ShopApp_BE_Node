@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { orderStatus, paymentStatus } from '~/utils/constants.js'
+import { ORDER_STATUS, paymentStatus } from '~/utils/constants.js'
 
 export interface OrderDetail {
   productId: string | ObjectId
@@ -17,7 +17,7 @@ export interface Order {
   email: string
   phoneNumber: string
   orderDate?: number
-  status?: keyof typeof orderStatus
+  status?: keyof typeof ORDER_STATUS
   total: number
   shippingMethod: string
   shippingAddress?: string

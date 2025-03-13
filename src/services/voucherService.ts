@@ -19,6 +19,12 @@ const getVoucherById = async (id: string) => {
 }
 
 const createVoucher = async (data: IVoucher) => {
+  const voucher = await voucherModel.getVoucherByCode(data.code)
+
+  if (voucher) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, 'Voucher code already exists!')
+  }
+
   return await voucherModel.createVoucher({
     ...data,
     createdAt: Date.now(),

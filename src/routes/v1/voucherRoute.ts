@@ -85,12 +85,12 @@ const router = express.Router()
  *         type: array
  *         items:
  *            type: string
- *            example: ["67b2949737b7d0fab7f203b5"]
+ *         example: ["67b2949737b7d0fab7f203b5"]
  *       applicableProducts:
  *         type: array
  *         items:
  *            type: string
- *            example: ["67b0b2c19f1f5fb97f386dfb"]
+ *         example: ["67b0b2c19f1f5fb97f386dfb"]
  */
 
 /**
@@ -106,6 +106,12 @@ const router = express.Router()
  *    responses:
  *      200:
  *        description: Successfully return the list of vouchers
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Voucher'
  *      401:
  *        description: Unauthorized
  *      500:
@@ -347,22 +353,23 @@ router.post('/', authMiddleware.isAuthorizedAndAdmin, voucherValidation.create, 
  *              usageLimit:
  *                type: number
  *                example: 500
- *              usageCount:
- *                type: number
- *                example: 50
  *              applicableCategories:
  *                type: array
  *                items:
  *                  type: string
- *                example: ["home-appliances", "books"]
+ *                example: ["67b0b2c19f1f5fb97f386dfb"]
  *              applicableProducts:
  *                type: array
  *                items:
  *                  type: string
- *                example: ["product789", "product999"]
+ *                example: ["67b0b2c19f1f5fb97f3863f6"]
  *    responses:
  *      200:
  *        description: Voucher updated successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Voucher'
  *      400:
  *        description: Bad request
  *      401:
@@ -372,7 +379,7 @@ router.post('/', authMiddleware.isAuthorizedAndAdmin, voucherValidation.create, 
  *      500:
  *        description: Internal server error
  */
-router.put('/:id', voucherController.updateVoucher)
+router.put('/:id', authMiddleware.isAuthorizedAndAdmin, voucherController.updateVoucher)
 
 /**
  * @swagger
@@ -394,6 +401,16 @@ router.put('/:id', voucherController.updateVoucher)
  *    responses:
  *      200:
  *        description: Voucher deleted successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: "Voucher deleted successfully"
+ *                deletedVoucher:
+ *                  $ref: '#/components/schemas/Voucher'
  *      400:
  *        description: Invalid voucher ID
  *      401:

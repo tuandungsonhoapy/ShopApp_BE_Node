@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
-import { orderStatus, paymentStatus } from '~/utils/constants.js'
+import { ORDER_STATUS, paymentStatus } from '~/utils/constants.js'
 import { Order, OrderDetail } from '~/@types/order/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
@@ -15,8 +15,8 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   phoneNumber: Joi.string().min(10).max(11).required(),
   orderDate: Joi.date().timestamp('javascript').default(Date.now()),
   status: Joi.string()
-    .valid(...Object.values(orderStatus))
-    .default(orderStatus.PENDING),
+    .valid(...Object.values(ORDER_STATUS))
+    .default(ORDER_STATUS.PENDING),
   total: Joi.number().min(0).required(),
   shippingMethod: Joi.string().max(100).required(),
   shippingAddress: Joi.string().default(''),

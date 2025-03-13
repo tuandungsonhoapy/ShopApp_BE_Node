@@ -93,6 +93,10 @@ const deleteVoucher = async (voucherId: string) => {
     )
 }
 
+const getVoucherByCode = async (code: string) => {
+  return await getDB().collection(VOUCHER_COLLECTION_NAME).findOne({ code, _destroy: false })
+}
+
 export const voucherModel = {
   VOUCHER_COLLECTION_NAME,
   VOUCHER_COLLECTION_SCHEMA,
@@ -100,5 +104,6 @@ export const voucherModel = {
   getVoucherById,
   updateVoucher,
   deleteVoucher,
-  createVoucher
+  createVoucher,
+  getVoucherByCode
 }
