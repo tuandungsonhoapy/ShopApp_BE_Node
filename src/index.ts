@@ -11,7 +11,10 @@ import YAML from 'yaml'
 import fs from 'fs'
 import path from 'path'
 import swaggerUi from 'swagger-ui-express'
+import http from 'http'
 import swaggerJsdoc from 'swagger-jsdoc'
+import { Server as socketIo } from 'socket.io'
+import { testMessageSocket } from '~/sockets/TestMessageSocket.js'
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -61,13 +64,21 @@ const START_SERVER = () => {
   // * Error handling middleware
   app.use(errorHandlingMiddleware)
 
+  // * Configuring the app to use socket.io
+  const server = http.createServer(app)
+  const io = new socketIo(server, { cors: corsOptions })
+
+  io.on('connection', (socket) => {
+    testMessageSocket(socket)
+  })
+
   if (env.BUILD_MODE === 'production') {
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log(`Server is running at port ${process.env.PORT}/api/v1`)
     })
   } else {
     const port: number = Number.parseInt(env.APP_PORT || '8081')
-    app.listen(port, env.APP_HOST || '', () => {
+    server.listen(port, env.APP_HOST || '', () => {
       console.log(`Server is running at http://${env.APP_HOST}:${port}/api/v1`)
     })
   }
