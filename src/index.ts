@@ -14,7 +14,7 @@ import swaggerUi from 'swagger-ui-express'
 import http from 'http'
 import swaggerJsdoc from 'swagger-jsdoc'
 import { Server as socketIo } from 'socket.io'
-import { testMessageSocket } from '~/sockets/TestMessageSocket.js'
+import { testMessageSocket } from '~/sockets/testMessageSocket.js'
 
 const options: swaggerJsdoc.Options = {
   definition: {
