@@ -14,6 +14,7 @@ export interface IProduct {
     stock: number
     price: number
   }>
+  createdAt?: Date | any | null
   updatedAt?: Date | any | null
   _destroy?: boolean
 }

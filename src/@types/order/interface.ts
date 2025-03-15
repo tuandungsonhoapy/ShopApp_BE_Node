@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { ORDER_STATUS, paymentStatus } from '~/utils/constants.js'
+import { IUser } from '../auth/interface.js'
 
 export interface OrderDetail {
   productId: string | ObjectId
@@ -12,6 +13,7 @@ export interface OrderDetail {
 }
 
 export interface Order {
+  orderId?: string
   fullName: string
   address: string
   email: string
@@ -32,4 +34,13 @@ export interface Order {
   createdAt?: number
   updatedAt?: number | null
   _destroy?: boolean
+}
+
+export interface OrderWithUser extends Order {
+  user?: IUser
+}
+
+export interface UpdateOrderStatusParams {
+  orderId: string
+  newStatus: keyof typeof ORDER_STATUS
 }
