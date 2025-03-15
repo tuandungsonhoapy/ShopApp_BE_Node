@@ -16,6 +16,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     shippingAddress: Joi.string().default(''),
     trackingNumber: Joi.string().optional().default(''),
     paymentMethod: Joi.string().max(100).required(),
+    voucher: Joi.string().default(''),
+    shippingFee: Joi.number().min(0).required(),
     orderDetails: Joi.array()
       .items(
         Joi.object({
@@ -41,8 +43,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateOrderStatus = async (req: Request, res: Response, next: NextFunction) => {
   const validationCondition = Joi.object({
-    orderId: Joi.string().optional().trim().required(),
-    newStatus: Joi.string().optional().trim().required()
+    orderId: Joi.string().trim().required(),
+    newStatus: Joi.string().trim().required()
   })
 
   try {

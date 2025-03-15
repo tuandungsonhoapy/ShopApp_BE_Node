@@ -18,6 +18,8 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   email: Joi.string().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE).required(),
   phoneNumber: Joi.string().min(10).max(11).required(),
   orderDate: Joi.date().timestamp('javascript').default(Date.now()),
+  voucher: Joi.string().default(''),
+  shippingFee: Joi.number().min(0).required(),
   status: Joi.string()
     .valid(...Object.values(ORDER_STATUS))
     .default(ORDER_STATUS.PENDING),
@@ -156,7 +158,7 @@ const getOrders = async (page: number, limit: number, query: string, userId?: st
     // Xây dựng pipeline
     const pipeline: any[] = [
       { $match: { $and: queryConditions } },
-      { $sort: { orderDate: 1 } },
+      { $sort: { orderDate: -1 } },
       {
         $lookup: {
           from: 'users',
@@ -212,11 +214,6 @@ const getOrders = async (page: number, limit: number, query: string, userId?: st
 
 const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
   const db = getDB()
-
-  // Kiểm tra xem order có tồn tại không
-  const order = await db.collection<Order>(ORDER_COLLECTION_NAME).findOne({ _id: new ObjectId(orderId) })
-  if (!order) throw new Error('Order not found')
-
   // Cập nhật trạng thái đơn hàng
   const result = await db
     .collection<Order>(ORDER_COLLECTION_NAME)

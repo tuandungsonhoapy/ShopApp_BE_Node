@@ -4,9 +4,10 @@ export const WHITELIST_DOMAINS: Array<string> = []
 
 export const ORDER_STATUS = {
   PENDING: 'pending',
-  PROCESSING: 'processing',
-  SHIPPED: 'shipped',
+  PREPARE: 'prepare',
+  SHIPPING: 'shipping',
   COMPLETED: 'completed',
+  REFUND: 'refund',
   CANCELED: 'canceled'
 }
 

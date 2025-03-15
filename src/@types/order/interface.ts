@@ -23,6 +23,8 @@ export interface Order {
   total: number
   shippingMethod: string
   shippingAddress?: string
+  voucher?: string
+  shippingFee?: number
   trackingNumber?: string
   paymentMethod: string
   shippingDate?: number | null
