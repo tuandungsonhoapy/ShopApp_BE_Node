@@ -1,6 +1,8 @@
+import { ObjectId } from 'mongodb'
+
 export interface IProduct {
   imagesURL?: string
-  _id?: string
+  _id?: string | ObjectId
   title: string
   categoryId?: string
   description?: string

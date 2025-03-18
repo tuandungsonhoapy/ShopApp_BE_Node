@@ -13,7 +13,7 @@ export interface OrderDetail {
 }
 
 export interface Order {
-  orderId?: string
+  orderId?: string | ObjectId
   fullName: string
   address: string
   email: string
@@ -27,11 +27,11 @@ export interface Order {
   shippingFee?: number
   trackingNumber?: string
   paymentMethod: string
-  shippingDate?: number | null
+  shippingDate?: number | null | Date
   isActive?: boolean
   paymentStatus?: keyof typeof paymentStatus
-  paymentDate?: number | null
-  userId: string
+  paymentDate?: number | null | Date
+  userId: string | ObjectId
   orderDetails?: OrderDetail[]
   createdAt?: number
   updatedAt?: number | null
