@@ -1,6 +1,7 @@
 import { ObjectId, AnyBulkWriteOperation } from 'mongodb'
 import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/order/interface.js'
 import { bulkUpdateProducts, getProductsByIds, orderModel } from '~/models/orderModel.js'
+import { ORDER_STATUS } from '~/utils/constants.js'
 
 const getOrders = async (page: number, limit: number, query: string, userId: string, status: string) => {
   return await orderModel.getOrders(page, limit, query, userId, status)
@@ -10,22 +11,7 @@ const getOrders = async (page: number, limit: number, query: string, userId: str
 //   return await orderModel.getOneById(id)
 // }
 
-const create = async (data: Order) => {
-  const orderResponse = await orderModel.create(data)
-
-  if (!orderResponse) throw new Error('Cannot create order')
-
-  await updateProductStock(data?.orderDetails)
-
-  return orderResponse
-}
-
-const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
-  return await orderModel.updateOrderStatus({ orderId, newStatus })
-}
-
-export const updateProductStock = async (orderDetails?: OrderDetail[]) => {
-  if (!orderDetails) return
+export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCancleStatus: boolean = false) => {
   const objectIds = orderDetails.map((detail) => ObjectId.createFromHexString(detail.productId.toString()))
 
   const products = await getProductsByIds(objectIds)
@@ -35,7 +21,8 @@ export const updateProductStock = async (orderDetails?: OrderDetail[]) => {
     const updatedSizes = product.sizes.map((sizeItem) => {
       const update = orderDetails.find((u) => u.size === sizeItem.size)
       if (update) {
-        return { ...sizeItem, stock: Math.max(0, sizeItem.stock - update.quantity) }
+        const updateStock = isCancleStatus ? sizeItem.stock + update.quantity : sizeItem.stock - update.quantity
+        return { ...sizeItem, stock: Math.max(0, updateStock) }
       }
       return sizeItem
     })
@@ -52,28 +39,26 @@ export const updateProductStock = async (orderDetails?: OrderDetail[]) => {
   await bulkUpdateProducts(bulkOperations)
 }
 
-// const update = async (id: string, data: IOrder) => {
-//   return await orderModel.update(id, data)
-// }
+const create = async (data: Order) => {
+  const orderResponse = await orderModel.create(data)
 
-// const deleteOneById = async (id: string) => {
-//   return await orderModel.deleteOneById(id)
-// }
+  if (!orderResponse) throw new Error('Cannot create order')
 
-// const getSubCategories = async (parentId: string) => {
-//   return await orderModel.getSubCategories(parentId)
-// }
+  await updateProductStock(data?.orderDetails)
 
-// const createOrderTree = async () => {
-//   return await orderModel.createOrderTree()
-// }
+  return orderResponse
+}
+
+const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
+  const updateOrderResponse = await orderModel.updateOrderStatus({ orderId, newStatus })
+  if (updateOrderResponse && newStatus === ORDER_STATUS.CANCEL) {
+    await updateProductStock(updateOrderResponse.result.orderDetails, true)
+  }
+  return updateOrderResponse
+}
+
 export const orderService = {
   getOrders,
-  // getOneById,
   create,
   updateOrderStatus
-  // update,
-  // deleteOneById,
-  // getSubCategories,
-  // createOrderTree
 }

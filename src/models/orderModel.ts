@@ -227,13 +227,17 @@ const getOrders = async (page: number, limit: number, query: string, userId?: st
 const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
   const db = getDB()
   // Cập nhật trạng thái đơn hàng
-  const result = await db
-    .collection<Order>(ORDER_COLLECTION_NAME)
-    .updateOne({ _id: new ObjectId(orderId) }, { $set: { status: newStatus, updatedAt: Date.now() } })
+  const result = await db.collection<Order>(ORDER_COLLECTION_NAME).findOneAndUpdate(
+    { _id: new ObjectId(orderId) },
+    { $set: { status: newStatus, updatedAt: Date.now() } },
+    { returnDocument: 'after' } // Trả về document sau khi cập nhật
+  )
 
   // Trả về kết quả
-  if (result.modifiedCount === 0) throw new Error('Failed to update order status')
-  return { message: 'Order status updated successfully', newStatus }
+  if (!result) {
+    throw new Error('Order not found or update failed')
+  }
+  return { message: 'Order status updated successfully', newStatus, result: result }
 }
 
 export const orderModel = {
