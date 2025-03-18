@@ -1,6 +1,6 @@
 import { env } from '~/configs/enviroment.js'
 
-export const WHITELIST_DOMAINS: Array<string> = []
+export const WHITELIST_DOMAINS: Array<string> = ['http://localhost:8081', 'http://localhost:5173']
 
 export const ORDER_STATUS = {
   PENDING: 'pending',

@@ -72,9 +72,11 @@ const START_SERVER = () => {
     testMessageSocket(socket)
   })
 
+  const PORT = process.env.PORT || 8081
+
   if (env.BUILD_MODE === 'production') {
-    server.listen(process.env.PORT, () => {
-      console.log(`Server is running at port ${process.env.PORT}/api/v1`)
+    server.listen(PORT, () => {
+      console.log(`Server is running at port ${PORT}/api/v1`)
     })
   } else {
     const port: number = Number.parseInt(env.APP_PORT || '8081')
