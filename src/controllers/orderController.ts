@@ -20,8 +20,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
 
 const getOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page, limit, q, status } = req.query
-    const { _id: userId } = req.jwtDecoded as { _id: string }
+    const { page, limit, q, status, userId } = req.query
 
     const products = await orderService.getOrders(
       parseInt(page as string, 10),
@@ -35,7 +34,19 @@ const getOrders = async (req: Request, res: Response, next: NextFunction) => {
     next(error)
   }
 }
+
+export const updateOrderStatus = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { orderId, newStatus } = req.body
+    const result = await orderService.updateOrderStatus({ orderId, newStatus })
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const orderController = {
   create,
-  getOrders
+  getOrders,
+  updateOrderStatus
 }

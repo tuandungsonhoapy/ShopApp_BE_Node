@@ -16,6 +16,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     shippingAddress: Joi.string().default(''),
     trackingNumber: Joi.string().optional().default(''),
     paymentMethod: Joi.string().max(100).required(),
+    voucher: Joi.string().default(''),
+    shippingFee: Joi.number().min(0).required(),
     orderDetails: Joi.array()
       .items(
         Joi.object({
@@ -25,10 +27,24 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
           price: Joi.number().min(0).required(),
           total: Joi.number().min(0).required(),
           size: Joi.string().max(20).default(''),
-          note: Joi.string().min(3).max(150).default('')
+          note: Joi.string().default('')
         })
       )
       .default([])
+  })
+
+  try {
+    await validationCondition.validateAsync(req.body, { abortEarly: false })
+    next()
+  } catch (error: any) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
+  }
+}
+
+const updateOrderStatus = async (req: Request, res: Response, next: NextFunction) => {
+  const validationCondition = Joi.object({
+    orderId: Joi.string().trim().required(),
+    newStatus: Joi.string().trim().required()
   })
 
   try {
@@ -40,22 +56,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-// const update = async (req: Request, res: Response, next: NextFunction) => {
-//   const validationCondition = Joi.object({
-//     name: Joi.string().optional().trim().strict(),
-//     description: Joi.string().optional().trim().strict()
-//   })
-
-//   try {
-//     await validationCondition.validateAsync(req.body, { abortEarly: false })
-
-//     next()
-//   } catch (error: any) {
-//     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, error.message))
-//   }
-// }
-
 export const orderValidation = {
-  create
-  // update
+  create,
+  updateOrderStatus
 }

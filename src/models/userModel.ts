@@ -26,7 +26,7 @@ const USER_COLLECTION_SCHEMA = Joi.object({
     }).default([])
   ),
   phoneNumber: Joi.string().optional().trim().strict(),
-  dateOfBirth: Joi.date().timestamp('javascript').optional(),
+  dateOfBirth: Joi.date().timestamp().optional(),
   avatar: Joi.string().default(null),
   province: Joi.string().required().trim().strict(),
   district: Joi.string().required().trim().strict(),
