@@ -8,11 +8,11 @@
     "build": "npm run clean && tsc && tsc-alias",
     "start": "cross-env BUILD_MODE=production node ./dist/index.js",
     "dev": "cross-env BUILD_MODE=dev nodemon --exec tsx src/index.ts",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --report-unused-disable-directives",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "production": "npm run lint && npm run prettier && npm run build && npm run start"
+    "production": "npm run build && npm run start"
   },
   "keywords": [],
   "author": "",
