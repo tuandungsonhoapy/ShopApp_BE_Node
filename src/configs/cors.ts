@@ -11,8 +11,9 @@ interface CorsOptions {
 
 export const corsOptions: CorsOptions = {
   origin: function (origin, callback) {
+    console.log('origin', origin)
     // Cho phép việc gọi API bằng POSTMAN trên môi trường dev,
-    if (env.BUILD_MODE === 'dev') {
+    if (!origin || env.BUILD_MODE === 'dev') {
       return callback(null, true)
     }
 
