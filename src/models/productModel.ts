@@ -6,7 +6,7 @@ import { getDB } from '~/configs/mongodb.js'
 import { skipPageNumber } from '~/utils/algorithms.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 
-const PRODUCT_COLLECTION_NAME = 'products'
+export const PRODUCT_COLLECTION_NAME = 'products'
 
 const PRODUCT_COLLECTION_SCHEMA = Joi.object({
   title: Joi.string().required(),

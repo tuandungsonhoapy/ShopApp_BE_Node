@@ -334,7 +334,9 @@ router.route('/').post(authMiddleware.isAuthorized, orderValidation.create, orde
  *     404:
  *       description: Category not found
  */
-// router.route('/:id').put(authMiddleware.isAuthorizedAndAdmin, categoryValidation.update, categoryController.update)
+router
+  .route('/updateOrderStatus')
+  .put(authMiddleware.isAuthorizedAndAdmin, orderValidation.updateOrderStatus, orderController.updateOrderStatus)
 
 /**
  * @swagger

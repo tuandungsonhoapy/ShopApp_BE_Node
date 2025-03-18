@@ -1,5 +1,6 @@
-import { Order } from '~/@types/order/interface.js'
+import { Order, UpdateOrderStatusParams } from '~/@types/order/interface.js'
 import { orderModel } from '~/models/orderModel.js'
+import { ORDER_STATUS } from '~/utils/constants.js'
 
 const getOrders = async (page: number, limit: number, query: string, userId: string, status: string) => {
   return await orderModel.getOrders(page, limit, query, userId, status)
@@ -11,6 +12,10 @@ const getOrders = async (page: number, limit: number, query: string, userId: str
 
 const create = async (data: Order) => {
   return await orderModel.create(data)
+}
+
+const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
+  return await orderModel.updateOrderStatus({ orderId, newStatus })
 }
 
 // const update = async (id: string, data: IOrder) => {
@@ -31,7 +36,8 @@ const create = async (data: Order) => {
 export const orderService = {
   getOrders,
   // getOneById,
-  create
+  create,
+  updateOrderStatus
   // update,
   // deleteOneById,
   // getSubCategories,
