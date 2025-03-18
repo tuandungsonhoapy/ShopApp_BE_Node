@@ -5,6 +5,7 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
 import { skipPageNumber } from '~/utils/algorithms.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
+import { PipelineStage } from 'mongoose'
 
 export const PRODUCT_COLLECTION_NAME = 'products'
 
@@ -138,7 +139,7 @@ const getAllProducts = async (page: number, limit: number, query: string, catego
     const limitNumber = Number.isInteger(limit) ? Number(limit) : undefined
 
     // Xây dựng pipeline
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: { $and: queryConditions } },
       { $sort: { title: 1 } },
       {

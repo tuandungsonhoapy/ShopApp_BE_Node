@@ -4,6 +4,8 @@ import { ObjectId } from 'mongodb'
 import { ICategory } from '~/@types/category/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
+import { Filter } from 'mongodb'
+import { IProduct } from '~/@types/product/interface.js'
 
 const CATEGORY_COLLECTION_NAME = 'categories'
 const CATEGORY_COLLECTION_SCHEMA = Joi.object({
@@ -30,7 +32,7 @@ const getAllCategories = async () => {
 
 const getAll = async (page: number, limit: number, query: string) => {
   try {
-    const queryConditions: any = { _destroy: false }
+    const queryConditions: Filter<IProduct> = { _destroy: false }
 
     if (query && typeof query === 'string' && query.trim() !== '') {
       queryConditions.$or = [

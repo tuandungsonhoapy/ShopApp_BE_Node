@@ -4,11 +4,12 @@ import { ORDER_STATUS, paymentStatus } from '~/utils/constants.js'
 import { Order, OrderDetail, OrderWithUser, UpdateOrderStatusParams } from '~/@types/order/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
-import { ObjectId } from 'mongodb'
+import { AnyBulkWriteOperation, ObjectId } from 'mongodb'
 import { skipPageNumber } from '~/utils/algorithms.js'
 import { PRODUCT_COLLECTION_NAME } from './productModel.js'
 import { IProduct } from '~/@types/product/interface.js'
 import { pickUser } from '~/utils/formatters.js'
+import { PipelineStage } from 'mongoose'
 
 const ORDER_COLLECTION_NAME = 'orders'
 const ORDER_COLLECTION_SCHEMA = Joi.object({
@@ -54,7 +55,7 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
-const generateOrderId = async () => {
+export const generateOrderId = async () => {
   const db = getDB()
   const orderCount = await db.collection(ORDER_COLLECTION_NAME).countDocuments()
   const newOrderNumber = orderCount + 1
@@ -63,20 +64,30 @@ const generateOrderId = async () => {
   return orderId
 }
 
+export const getProductsByIds = async (productIds: ObjectId[]) => {
+  return await getDB()
+    .collection<IProduct>(PRODUCT_COLLECTION_NAME)
+    .find({ _id: { $in: productIds || [] }, _destroy: false })
+    .toArray()
+}
+
+export const bulkUpdateProducts = async (bulkOperations: AnyBulkWriteOperation[]) => {
+  if (bulkOperations.length > 0) {
+    await getDB().collection(PRODUCT_COLLECTION_NAME).bulkWrite(bulkOperations)
+  }
+}
+
 const create = async (data: Order) => {
   try {
     // Validate
     data.orderId = await generateOrderId()
     const value = await ORDER_COLLECTION_SCHEMA.validateAsync(data)
 
-    const orderId = await generateOrderId()
-
     // Insert order
     const result = await getDB()
       .collection(ORDER_COLLECTION_NAME)
       .insertOne({
         ...value,
-        orderId,
         userId: ObjectId.createFromHexString(value.userId.toString()),
         orderDetails: value.orderDetails.map((detail: OrderDetail) => ({
           ...detail,
@@ -85,45 +96,10 @@ const create = async (data: Order) => {
         shippingDate: value.shippingDate ? new Date(value.shippingDate) : null,
         paymentDate: value.paymentDate ? new Date(value.paymentDate) : null
       })
-    const orderResponse = await getDB().collection(ORDER_COLLECTION_NAME).findOne({ _id: result.insertedId })
 
-    // Create order fail
-    if (!orderResponse) throw new Error('Cannot create order')
+    return await getDB().collection(ORDER_COLLECTION_NAME).findOne({ _id: result.insertedId })
 
-    // Create order success => Update stock
-    const objectIds = data.orderDetails?.map((detail: OrderDetail) =>
-      ObjectId.createFromHexString(detail.productId.toString())
-    ) as unknown as string[]
-
-    const products: IProduct[] = await getDB()
-      .collection<IProduct>(PRODUCT_COLLECTION_NAME)
-      .find({ _id: { $in: objectIds || [] }, _destroy: false })
-      .toArray()
-
-    // create array contain update stock for size of product
-    const bulkOperations = products.map((product) => {
-      const updatedSizes = product.sizes.map((sizeItem) => {
-        const update = data.orderDetails?.find((u) => u.size === sizeItem.size)
-        if (update) {
-          return { ...sizeItem, stock: Math.max(0, sizeItem.stock - update.quantity) }
-        }
-        return sizeItem
-      })
-
-      return {
-        updateOne: {
-          filter: { _id: new ObjectId(product._id) },
-          update: { $set: { sizes: updatedSizes, updatedAt: new Date() } }
-        }
-      }
-    })
-
-    // update stock for size of product to database
-    if (bulkOperations.length > 0) {
-      await getDB().collection(PRODUCT_COLLECTION_NAME).bulkWrite(bulkOperations)
-    }
-
-    return orderResponse
+    // return orderResponse
   } catch (error) {
     handleThrowError(error)
   }
@@ -156,7 +132,7 @@ const getOrders = async (page: number, limit: number, query: string, userId?: st
     const limitNumber = Number.isInteger(limit) ? Number(limit) : undefined
 
     // Xây dựng pipeline
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: { $and: queryConditions } },
       { $sort: { orderDate: -1 } },
       {
@@ -215,13 +191,17 @@ const getOrders = async (page: number, limit: number, query: string, userId?: st
 const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
   const db = getDB()
   // Cập nhật trạng thái đơn hàng
-  const result = await db
-    .collection<Order>(ORDER_COLLECTION_NAME)
-    .updateOne({ _id: new ObjectId(orderId) }, { $set: { status: newStatus, updatedAt: Date.now() } })
+  const result = await db.collection<Order>(ORDER_COLLECTION_NAME).findOneAndUpdate(
+    { _id: new ObjectId(orderId) },
+    { $set: { status: newStatus, updatedAt: Date.now() } },
+    { returnDocument: 'after' } // Trả về document sau khi cập nhật
+  )
 
   // Trả về kết quả
-  if (result.modifiedCount === 0) throw new Error('Failed to update order status')
-  return { message: 'Order status updated successfully', newStatus }
+  if (!result) {
+    throw new Error('Order not found or update failed')
+  }
+  return { message: 'Order status updated successfully', newStatus, result: result }
 }
 
 export const orderModel = {

@@ -12,7 +12,7 @@ export const ORDER_STATUS = {
   SHIPPING: 'shipping',
   COMPLETED: 'completed',
   REFUND: 'refund',
-  CANCELED: 'canceled'
+  CANCEL: 'cancel'
 }
 
 export const paymentStatus = {
