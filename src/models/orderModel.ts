@@ -99,42 +99,6 @@ const create = async (data: Order) => {
 
     return await getDB().collection(ORDER_COLLECTION_NAME).findOne({ _id: result.insertedId })
 
-    // // Create order fail
-    // if (!orderResponse) throw new Error('Cannot create order')
-
-    // // Create order success => Update stock
-    // const objectIds = data.orderDetails?.map((detail: OrderDetail) =>
-    //   ObjectId.createFromHexString(detail.productId.toString())
-    // ) as unknown as string[]
-
-    // const products: IProduct[] = await getDB()
-    //   .collection<IProduct>(PRODUCT_COLLECTION_NAME)
-    //   .find({ _id: { $in: objectIds || [] }, _destroy: false })
-    //   .toArray()
-
-    // // create array contain update stock for size of product
-    // const bulkOperations = products.map((product) => {
-    //   const updatedSizes = product.sizes.map((sizeItem) => {
-    //     const update = data.orderDetails?.find((u) => u.size === sizeItem.size)
-    //     if (update) {
-    //       return { ...sizeItem, stock: Math.max(0, sizeItem.stock - update.quantity) }
-    //     }
-    //     return sizeItem
-    //   })
-
-    //   return {
-    //     updateOne: {
-    //       filter: { _id: new ObjectId(product._id) },
-    //       update: { $set: { sizes: updatedSizes, updatedAt: new Date() } }
-    //     }
-    //   }
-    // })
-
-    // // update stock for size of product to database
-    // if (bulkOperations.length > 0) {
-    //   await getDB().collection(PRODUCT_COLLECTION_NAME).bulkWrite(bulkOperations)
-    // }
-
     // return orderResponse
   } catch (error) {
     handleThrowError(error)

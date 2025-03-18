@@ -7,10 +7,6 @@ const getOrders = async (page: number, limit: number, query: string, userId: str
   return await orderModel.getOrders(page, limit, query, userId, status)
 }
 
-// const getOneById = async (id: string) => {
-//   return await orderModel.getOneById(id)
-// }
-
 export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCancleStatus: boolean = false) => {
   const objectIds = orderDetails.map((detail) => ObjectId.createFromHexString(detail.productId.toString()))
 
