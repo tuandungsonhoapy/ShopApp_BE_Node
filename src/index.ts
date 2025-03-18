@@ -16,6 +16,8 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import { Server as socketIo } from 'socket.io'
 import { testMessageSocket } from '~/sockets/testMessageSocket.js'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 const options: swaggerJsdoc.Options = {
   definition: {
     openapi: '3.0.0',
@@ -25,8 +27,8 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: 'http://localhost:8081/api/v1',
-        description: 'Development server'
+        url: isProduction ? 'https://shopapp-be-node.onrender.com/api/v1' : 'http://localhost:8081/api/v1',
+        description: isProduction ? 'Production server' : 'Development server'
       }
     ]
   },
