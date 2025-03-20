@@ -3,7 +3,8 @@ import { env } from '~/configs/enviroment.js'
 export const WHITELIST_DOMAINS: Array<string> = [
   'http://localhost:8081',
   'http://localhost:5173',
-  'https://shopapp-be-node.onrender.com'
+  'https://shopapp-be-node.onrender.com',
+  'https://react-js-code-base-nlul.vercel.app'
 ]
 
 export const ORDER_STATUS = {
