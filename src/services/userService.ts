@@ -45,7 +45,7 @@ const registerUser = async (data: IUser) => {
     email: data.email,
     displayName: username,
     verifyToken: uuidv4(),
-    customerId,
+    customerId: `KH${String(customerId).padStart(5, '0')}`,
     addresses: [
       {
         fullname: data.fullname,
@@ -57,6 +57,8 @@ const registerUser = async (data: IUser) => {
       }
     ]
   }
+
+  console.log('newUser', newUser)
 
   const registeredUser = await userModel.registerUser(newUser as IUser)
   if (!registeredUser) {
