@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { voucherService } from '~/services/voucherService.js'
+import { voucherService } from '~/services/v1/voucherService.js'
 
 const getAllVouchers = async (req: Request, res: Response, next: NextFunction) => {
   try {

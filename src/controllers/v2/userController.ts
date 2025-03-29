@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import ms from 'ms'
-import { userService } from '~/services/userService.js'
+import { userService } from '~/services/v2/userService.js'
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -100,9 +100,9 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { _id } = req.jwtDecoded as { _id: string }
+    const { id } = req.jwtDecoded as { id: number }
 
-    const response = await userService.updateUser(_id, req.body)
+    const response = await userService.updateUser(id, req.body)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
@@ -113,7 +113,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 const changePasswordUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { old_password, new_password, confirm_password } = req.body
-    const { _id: userId } = req.jwtDecoded as { _id: string }
+    const { id: userId } = req.jwtDecoded as { id: number }
 
     if (!userId) {
       res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Unauthorized' })

@@ -1,4 +1,4 @@
-import { voucherModel } from '~/models/voucherModel.js'
+import { voucherModel } from '~/models/v1/voucherModel.js'
 import ApiError from '~/utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
 import { IVoucher } from '~/@types/voucher/interface.js'

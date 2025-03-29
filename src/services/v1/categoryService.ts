@@ -1,5 +1,5 @@
 import { ICategory } from '~/@types/category/interface.js'
-import { categoryModel } from '~/models/categoryModel.js'
+import { categoryModel } from '~/models/v1/categoryModel.js'
 
 const getAllCategories = async () => {
   return await categoryModel.getAllCategories()

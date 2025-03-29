@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { userModel } from '~/models/userModel.js'
+import { userModel } from '~/models/v2/userModel.js'
 import ApiError from '~/utils/ApiError.js'
 import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
@@ -10,7 +10,6 @@ import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
 import crypto from 'crypto'
-import { getNextSequenceValue } from '~/models/counterModel.js'
 
 function generateOTP(length = 6) {
   return crypto.randomInt(10 ** (length - 1), 10 ** length).toString()
@@ -37,25 +36,13 @@ const registerUser = async (data: IUser) => {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Password is required!')
   }
   const username = data.email.split('@')[0]
-  const customerId = await getNextSequenceValue(userModel.USER_COLLECTION_NAME)
 
   const newUser = {
     ...data,
     password: bcryptjs.hashSync(data.password, 10),
     email: data.email,
     displayName: username,
-    verifyToken: uuidv4(),
-    customerId: `KH${String(customerId).padStart(5, '0')}`,
-    addresses: [
-      {
-        fullname: data.fullname,
-        phoneNumber: data.phoneNumber,
-        address: data.address,
-        province: data.province,
-        district: data.district,
-        isDefault: true
-      }
-    ]
+    verifyToken: uuidv4()
   }
 
   console.log('newUser', newUser)
@@ -64,13 +51,13 @@ const registerUser = async (data: IUser) => {
   if (!registeredUser) {
     throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'User registration failed!')
   }
-  const user = await userModel.findOneById(registeredUser.insertedId)
-  if (!user) {
-    throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'User not found after registration!')
-  }
+  // const user = await userModel.findOneById(registeredUser.insertedId)
+  // if (!user) {
+  //   throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'User not found after registration!')
+  // }
 
   // * Send verification email
-  const verificationLink = `${WEB_DOMAIN}/verify-account?email=${user?.email}&token=${user?.verifyToken}`
+  const verificationLink = `${WEB_DOMAIN}/verify-account?email=${registeredUser?.email}&token=${registeredUser?.verifyToken}`
   const customSubject = 'Shop App: Please verify your email address to activate your account!'
   const htmlContent = `
     <h2>Welcome to The Shop App!</h2>
@@ -80,9 +67,9 @@ const registerUser = async (data: IUser) => {
   `
 
   // * Send email
-  await BrevoProvider.sendEmail(user?.email, customSubject, htmlContent)
+  await BrevoProvider.sendEmail(registeredUser?.email, customSubject, htmlContent)
 
-  return pickUser(user as unknown as IUser)
+  return pickUser(registeredUser as unknown as IUser)
 }
 
 const login = async (data: IUserLogin) => {
@@ -158,7 +145,7 @@ const forgotPassword = async (email: string) => {
   return { message: 'OTP code has been sent to your email!', isSendOTP: true, userId: existedUser._id }
 }
 
-const verifyOTP = async (userId: string, otp: string) => {
+const verifyOTP = async (userId: number, otp: string) => {
   const user = await userModel.findOneById(userId)
 
   if (!user) {
@@ -177,7 +164,7 @@ const verifyOTP = async (userId: string, otp: string) => {
 }
 
 const resetPassword = async (data: {
-  userId: string
+  userId: number
   password: string
   confirmPassword: string
   verifyToken: string
@@ -211,12 +198,12 @@ const getAllUsers = async (page: number, limit: number, q: string, type: string)
   }
 }
 
-const updateUser = async (id: string, data: Partial<IUser>) => {
+const updateUser = async (id: number, data: Partial<IUser>) => {
   return pickUser((await userModel.updateOneById(id, data)) as unknown as IUser)
 }
 
 const changePasswordUser = async (
-  userId: string,
+  userId: number,
   old_password: string,
   new_password: string,
   confirm_password: string

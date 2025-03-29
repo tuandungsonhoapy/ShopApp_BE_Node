@@ -1,5 +1,5 @@
 import { ICartItem } from '~/@types/cart/interface.js'
-import { cartModel } from '~/models/cartModel.js'
+import { cartModel } from '~/models/v1/cartModel.js'
 
 const addToCart = async (userId: string, cartItem: ICartItem) => {
   return await cartModel.addToCart(userId, cartItem)

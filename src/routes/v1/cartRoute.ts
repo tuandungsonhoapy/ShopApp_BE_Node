@@ -1,5 +1,5 @@
 import express from 'express'
-import { cartController } from '~/controllers/cartController.js'
+import { cartController } from '~/controllers/v1/cartController.js'
 import { cartValidation } from '~/validations/cartValidation.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
 

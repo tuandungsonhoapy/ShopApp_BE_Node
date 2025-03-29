@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { productService } from '~/services/productService.js'
+import { productService } from '~/services/v1/productService.js'
 
 const getAllProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {

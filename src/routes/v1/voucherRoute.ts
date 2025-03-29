@@ -1,6 +1,6 @@
 import express from 'express'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
-import { voucherController } from '~/controllers/voucherController.js'
+import { voucherController } from '~/controllers/v1/voucherController.js'
 import { voucherValidation } from '~/validations/voucherValidation.js'
 
 const router = express.Router()

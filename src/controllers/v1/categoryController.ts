@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { ICategory } from '~/@types/category/interface.js'
-import { categoryModel } from '~/models/categoryModel.js'
-import { categoryService } from '~/services/categoryService.js'
+import { categoryModel } from '~/models/v1/categoryModel.js'
+import { categoryService } from '~/services/v1/categoryService.js'
 
 const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
   try {

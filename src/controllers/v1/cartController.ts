@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { cartService } from '~/services/cartService.js'
+import { cartService } from '~/services/v1/cartService.js'
 import ApiError from '~/utils/ApiError.js'
 
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {

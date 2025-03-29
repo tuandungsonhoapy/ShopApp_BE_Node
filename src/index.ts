@@ -15,6 +15,8 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import { Server as socketIo } from 'socket.io'
 import { testMessageSocket } from '~/sockets/testMessageSocket.js'
 import { APIs_V1 } from '~/routes/v1/index.js'
+import { connectDBPostgre } from '~/configs/postgres.js'
+import { APIs_V2 } from '~/routes/v2/index.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -61,6 +63,7 @@ const START_SERVER = () => {
   app.use(express.json())
 
   // * Configuring the app to use routes
+  app.use('/api/v2', APIs_V2)
   app.use('/api/v1', APIs_V1)
 
   // * Error handling middleware
@@ -98,6 +101,7 @@ const START_SERVER = () => {
 ;(async () => {
   try {
     await connectDB()
+    await connectDBPostgre()
     console.log('Connected to MongoDB successfully!')
     START_SERVER()
   } catch (error) {

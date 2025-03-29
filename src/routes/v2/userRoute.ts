@@ -1,5 +1,5 @@
 import express from 'express'
-import { userController } from '~/controllers/v1/userController.js'
+import { userController } from '~/controllers/v2/userController.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
 import { userValidation } from '~/validations/userValidation.js'
 

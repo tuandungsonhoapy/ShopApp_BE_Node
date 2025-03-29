@@ -1,5 +1,5 @@
 import express, { RequestHandler } from 'express'
-import { productController } from '~/controllers/productsController.js'
+import { productController } from '~/controllers/v1/productsController.js'
 import { productValidation } from '~/validations/productValidation.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
 // import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
