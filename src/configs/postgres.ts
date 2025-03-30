@@ -14,9 +14,9 @@ const pool = new Pool({
 // * Hàm kết nối
 export const connectDBPostgre = async () => {
   try {
-    const client = await pool.connect()
-    console.log('Connected to PostgreSQL successfully!')
-    client.release() // Giải phóng kết nối sau khi kiểm tra thành công
+    // const client = await pool.connect()
+    // console.log('Connected to PostgreSQL successfully!')
+    // client.release() // Giải phóng kết nối sau khi kiểm tra thành công
   } catch (err) {
     console.error('Error connecting to PostgreSQL:', err)
     process.exit(1)
