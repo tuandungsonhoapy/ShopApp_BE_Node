@@ -24,7 +24,22 @@ const INVALID_UPDATE_FIELDS = ['_id', 'createdAt', 'updatedAt']
 
 const getAllCategories = async () => {
   try {
-    return await getDB().collection(CATEGORY_COLLECTION_NAME).find({ _destroy: false }).toArray()
+    return await getDB()
+      .collection(CATEGORY_COLLECTION_NAME)
+      .aggregate([
+        {
+          $match: { _destroy: false } // Lọc các category không bị xóa
+        },
+        {
+          $lookup: {
+            from: 'products', // Collection products
+            localField: '_id', // Field trong categories
+            foreignField: 'categoryId', // Field trong products
+            as: 'products' // Tên field chứa danh sách sản phẩm
+          }
+        }
+      ])
+      .toArray()
   } catch (error) {
     handleThrowError(error)
   }
@@ -49,6 +64,14 @@ const getAll = async (page: number, limit: number, query: string) => {
       .collection(CATEGORY_COLLECTION_NAME)
       .aggregate([
         { $match: queryConditions },
+        {
+          $lookup: {
+            from: 'products', // Collection cần join
+            localField: '_id', // Trường trong categories
+            foreignField: 'categoryId', // Trường liên kết trong products
+            as: 'products' // Kết quả join lưu vào products
+          }
+        },
         {
           $facet: {
             data: [{ $sort: { name: 1 } }, { $skip: skipNumber }, { $limit: limitNumber }],
