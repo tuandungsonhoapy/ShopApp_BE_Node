@@ -11,7 +11,17 @@ export interface OrderDetail {
   size?: string
   note?: string
 }
-
+export interface ProductApplied {
+  productId: string | ObjectId
+  discountPerProduct: number
+}
+export interface VoucherUsed {
+  voucherId: string | ObjectId
+  code: string
+  discountAmount: number
+  maxDiscount?: number
+  productsApplied: ProductApplied[]
+}
 export interface Order {
   orderId?: string | ObjectId
   fullName: string
@@ -36,6 +46,7 @@ export interface Order {
   createdAt?: number
   updatedAt?: number | null
   _destroy?: boolean
+  vouchersUsed?: VoucherUsed[]
 }
 
 export interface OrderWithUser extends Order {

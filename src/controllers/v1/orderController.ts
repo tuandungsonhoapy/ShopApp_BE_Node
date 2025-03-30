@@ -1,10 +1,14 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Order } from '~/@types/order/interface.js'
-import { orderService } from '~/services/v1/orderService.js'
+import { orderService } from '~/services/orderService.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.jwtDecoded) {
+      res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Unauthorized: Missing or invalid token' })
+    }
+
     const { _id: userId } = req.jwtDecoded as { _id: string }
 
     const result = await orderService.create({
