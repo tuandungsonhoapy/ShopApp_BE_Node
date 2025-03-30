@@ -2,7 +2,12 @@ import { ICategory } from '~/@types/category/interface.js'
 import { categoryModel } from '~/models/v1/categoryModel.js'
 
 const getAllCategories = async () => {
-  return await categoryModel.getAllCategories()
+  const data = await categoryModel.getAllCategories()
+
+  return {
+    data: data || [],
+    total: data?.length || 0
+  }
 }
 
 const getAll = async (page: number, limit: number, query: string) => {
