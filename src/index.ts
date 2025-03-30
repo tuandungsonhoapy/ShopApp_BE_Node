@@ -12,7 +12,7 @@ import path from 'path'
 import swaggerUi from 'swagger-ui-express'
 import http from 'http'
 import swaggerJsdoc from 'swagger-jsdoc'
-import { Server as socketIo } from 'socket.io'
+// import { Server as socketIo } from 'socket.io'
 import { testMessageSocket } from '~/sockets/testMessageSocket.js'
 import { APIs_V1 } from '~/routes/v1/index.js'
 
@@ -68,11 +68,11 @@ const START_SERVER = () => {
 
   // * Configuring the app to use socket.io
   const server = http.createServer(app)
-  const io = new socketIo(server, { cors: corsOptions })
+  // const io = new socketIo(server, { cors: corsOptions })
 
-  io.on('connection', (socket) => {
-    testMessageSocket(socket)
-  })
+  // io.on('connection', (socket) => {
+  //   testMessageSocket(socket)
+  // })
 
   const PORT = process.env.PORT || 8081
 

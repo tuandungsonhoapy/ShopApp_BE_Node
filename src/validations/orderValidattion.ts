@@ -16,7 +16,6 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     shippingAddress: Joi.string().default(''),
     trackingNumber: Joi.string().optional().default(''),
     paymentMethod: Joi.string().max(100).required(),
-    voucher: Joi.string().default(''),
     shippingFee: Joi.number().min(0).required(),
     orderDetails: Joi.array()
       .items(
@@ -30,7 +29,27 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
           note: Joi.string().default('')
         })
       )
-      .default([])
+      .default([]),
+    vouchersUsed: Joi.array()
+      .items(
+        Joi.object({
+          voucherId: Joi.string().required(),
+          code: Joi.string().required(),
+          discountAmount: Joi.number().required(),
+          maxDiscount: Joi.number().required(),
+          productsApplied: Joi.array()
+            .items(
+              Joi.object({
+                productId: Joi.string().required(),
+                discountPerProduct: Joi.number().required()
+              })
+            )
+            .min(1)
+            .required()
+        })
+      )
+      .min(1)
+      .required()
   })
 
   try {

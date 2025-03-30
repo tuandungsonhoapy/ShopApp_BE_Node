@@ -1,12 +1,13 @@
 import Joi from 'joi'
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { ORDER_STATUS, paymentStatus } from '~/utils/constants.js'
-import { Order, OrderDetail, OrderWithUser, UpdateOrderStatusParams } from '~/@types/order/interface.js'
+import { Order, OrderDetail, OrderWithUser, UpdateOrderStatusParams, VoucherUsed } from '~/@types/order/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 import { AnyBulkWriteOperation, ObjectId } from 'mongodb'
 import { skipPageNumber } from '~/utils/algorithms.js'
 import { PRODUCT_COLLECTION_NAME } from './productModel.js'
+import { VOUCHER_COLLECTION_NAME } from './voucherModel.js'
 import { IProduct } from '~/@types/product/interface.js'
 import { pickUser } from '~/utils/formatters.js'
 import { PipelineStage } from 'mongoose'
@@ -19,7 +20,6 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   email: Joi.string().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE).required(),
   phoneNumber: Joi.string().min(10).max(11).required(),
   orderDate: Joi.date().timestamp('javascript').default(Date.now()),
-  voucher: Joi.string().default(''),
   shippingFee: Joi.number().min(0).required(),
   status: Joi.string()
     .valid(...Object.values(ORDER_STATUS))
@@ -45,11 +45,28 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
         price: Joi.number().min(0).required(),
         total: Joi.number().min(0).required(),
         size: Joi.string().max(20).default(''),
-        note: Joi.string().default('').optional()
+        note: Joi.string().default('').optional().allow('')
       })
     )
     .default([]),
-
+  vouchersUsed: Joi.array()
+    .items(
+      Joi.object({
+        voucherId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required(),
+        code: Joi.string().required(),
+        discountAmount: Joi.number().min(0).required(),
+        maxDiscount: Joi.number().min(0).optional(),
+        productsApplied: Joi.array()
+          .items(
+            Joi.object({
+              productId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required(),
+              discountPerProduct: Joi.number().min(0).required()
+            })
+          )
+          .default([])
+      })
+    )
+    .default([]),
   createdAt: Joi.date().timestamp('javascript').default(Date.now()),
   updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
@@ -77,27 +94,86 @@ export const bulkUpdateProducts = async (bulkOperations: AnyBulkWriteOperation[]
   }
 }
 
+const checkVouchers = async (vouchersUsed: VoucherUsed[], userId: string) => {
+  for (const voucher of vouchersUsed) {
+    // Check voucher ton tại va con han su dung
+    const voucherFromDB = await getDB()
+      .collection(VOUCHER_COLLECTION_NAME)
+      .findOne({
+        _id: ObjectId.createFromHexString(voucher.voucherId.toString()),
+        isActive: true,
+        expirationDate: { $gt: new Date() }
+      })
+    if (!voucherFromDB) throw new Error(`Voucher ${voucher.code} không hợp lệ`)
+
+    // Kiem tra so lan su dung
+    const usedCount = await getDB()
+      .collection('orders')
+      .countDocuments({
+        userId: new ObjectId(userId),
+        'vouchersUsed.voucherId': voucher.voucherId
+      })
+    if (usedCount >= voucherFromDB.usageLimitPerUser) {
+      throw new Error(`Bạn đã dùng hết lượt cho voucher ${voucher.code}`)
+    }
+
+    // Kiểm tra discountAmount có khớp với logic không?
+    if (voucher.discountAmount > voucherFromDB.maxDiscount) {
+      throw new Error(`Số tiền giảm giá vượt quá ${voucherFromDB.maxDiscount}`)
+    }
+  }
+}
+
 const create = async (data: Order) => {
   try {
     // Validate
     data.orderId = await generateOrderId()
     const value = await ORDER_COLLECTION_SCHEMA.validateAsync(data)
+    if (value.vouchersUsed?.length > 0) {
+      await checkVouchers(value.vouchersUsed, value.userId)
+    }
 
+    // Chuyen id sang ObjectId
+    const vouchersUsed =
+      data.vouchersUsed?.map((voucher) => ({
+        ...voucher,
+        voucherId: ObjectId.createFromHexString(voucher.voucherId.toString()),
+        productsApplied: voucher.productsApplied.map((product) => ({
+          ...product,
+          productId: ObjectId.createFromHexString(product.productId.toString())
+        }))
+      })) || []
+
+    const totalDiscount = vouchersUsed.reduce(
+      (sum, voucher) =>
+        sum + voucher.productsApplied.reduce((sumProduct, product) => sumProduct + product.discountPerProduct, 0),
+      0
+    )
+    const totalProducts = data.orderDetails?.reduce((sum, product) => sum + product.quantity * product.price, 0) || 0
+    const shippingFee = data.shippingFee ?? 0
+    const totalFinal = Math.max(0, totalProducts - totalDiscount + shippingFee)
+    data.total = totalFinal
+
+    const orderToInsert = {
+      ...value,
+      userId: ObjectId.createFromHexString(value.userId.toString()),
+      orderDetails: value.orderDetails.map((detail: OrderDetail) => ({
+        ...detail,
+        productId: ObjectId.createFromHexString(detail.productId.toString())
+      })),
+      vouchersUsed,
+      total: totalFinal,
+      shippingDate: value.shippingDate ? new Date(value.shippingDate) : null,
+      paymentDate: value.paymentDate ? new Date(value.paymentDate) : null
+    }
     // Insert order
-    const result = await getDB()
-      .collection(ORDER_COLLECTION_NAME)
-      .insertOne({
-        ...value,
-        userId: ObjectId.createFromHexString(value.userId.toString()),
-        orderDetails: value.orderDetails.map((detail: OrderDetail) => ({
-          ...detail,
-          productId: ObjectId.createFromHexString(detail.productId.toString())
-        })),
-        shippingDate: value.shippingDate ? new Date(value.shippingDate) : null,
-        paymentDate: value.paymentDate ? new Date(value.paymentDate) : null
-      })
+    const result = await getDB().collection(ORDER_COLLECTION_NAME).insertOne(orderToInsert)
 
-    return await getDB().collection(ORDER_COLLECTION_NAME).findOne({ _id: result.insertedId })
+    // return await getDB().collection(ORDER_COLLECTION_NAME).findOne({ _id: result.insertedId })
+    return {
+      ...orderToInsert,
+      _id: result.insertedId
+    }
 
     // return orderResponse
   } catch (error) {

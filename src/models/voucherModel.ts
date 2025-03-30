@@ -5,7 +5,7 @@ import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 
-const VOUCHER_COLLECTION_NAME = 'vouchers'
+export const VOUCHER_COLLECTION_NAME = 'vouchers'
 
 const VOUCHER_COLLECTION_SCHEMA = Joi.object({
   code: Joi.string().required(),
