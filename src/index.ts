@@ -63,7 +63,7 @@ const START_SERVER = () => {
   app.use(express.json())
 
   // * Configuring the app to use routes
-  app.use('/api/v2', APIs_V2)
+  // app.use('/api/v2', APIs_V2)
   app.use('/api/v1', APIs_V1)
 
   // * Error handling middleware
