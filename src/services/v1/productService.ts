@@ -1,7 +1,7 @@
 import { productModel } from '~/models/v1/productModel.js'
 import ApiError from '~/utils/ApiError.js'
 import { StatusCodes } from 'http-status-codes'
-import { IProduct } from '~/@types/product/interface.js'
+import { IProduct } from '~/@types/v1/product/interface.js'
 import { CloudinaryProvider } from '~/providers/CloudinaryProvider.js'
 import { getNextSequenceValue } from '~/models/v1/counterModel.js'
 // import { result } from 'lodash'

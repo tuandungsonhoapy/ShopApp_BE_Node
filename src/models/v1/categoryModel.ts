@@ -1,11 +1,11 @@
 import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 // import { queryObjects } from 'v8'
-import { ICategory } from '~/@types/category/interface.js'
+import { ICategory } from '~/@types/v1/category/interface.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 import { Filter } from 'mongodb'
-import { IProduct } from '~/@types/product/interface.js'
+import { IProduct } from '~/@types/v1/product/interface.js'
 
 const CATEGORY_COLLECTION_NAME = 'categories'
 const CATEGORY_COLLECTION_SCHEMA = Joi.object({

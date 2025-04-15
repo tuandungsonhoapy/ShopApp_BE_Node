@@ -1,5 +1,5 @@
 import JWT from 'jsonwebtoken'
-import { IUser } from '~/@types/auth/interface.js'
+import { IUser } from '~/@types/v1/auth/interface.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 
 const generateToken = (userInfo: IUser, secretSignature: string, tokenLife: string | number) => {

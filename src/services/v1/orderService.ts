@@ -1,5 +1,5 @@
 import { ObjectId, AnyBulkWriteOperation } from 'mongodb'
-import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/order/interface.js'
+import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/v1/order/interface.js'
 import { bulkUpdateProducts, getProductsByIds, orderModel } from '~/models/v1/orderModel.js'
 import { ORDER_STATUS } from '~/utils/constants.js'
 

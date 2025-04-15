@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 import Joi from 'joi'
-import { IVoucher } from '~/@types/voucher/interface.js'
+import { IVoucher } from '~/@types/v1/voucher/interface.js'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'

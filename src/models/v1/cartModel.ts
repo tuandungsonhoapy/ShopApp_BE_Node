@@ -3,7 +3,7 @@ import Joi from 'joi'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators.js'
 import { getDB } from '~/configs/mongodb.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
-import { ICart, ICartItem } from '~/@types/cart/interface.js'
+import { ICart, ICartItem } from '~/@types/v1/cart/interface.js'
 
 const CART_COLLECTION_NAME = 'cart'
 

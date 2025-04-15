@@ -1,11 +1,11 @@
 import { StatusCodes } from 'http-status-codes'
-import { userModel } from '~/models/v2/userModel.js'
+import { userModel_V2 } from '~/models/v2/userModel.js'
 import ApiError from '~/utils/ApiError.js'
 import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { BrevoProvider } from '~/providers/BrevoProvider.js'
 import { pickUser } from '~/utils/formatters.js'
-import { IUser, IUserLogin } from '~/@types/auth/interface.js'
+import { IUser, IUserLogin } from '~/@types/v1/auth/interface.js'
 import { WEB_DOMAIN } from '~/utils/constants.js'
 import { env } from '~/configs/enviroment.js'
 import { JwtProvider } from '~/providers/JwtProvider.js'
@@ -17,7 +17,7 @@ function generateOTP(length = 6) {
 
 const registerUser = async (data: IUser) => {
   // * Check email has been existed
-  const existedUser = await userModel.findOneByEmail(data.email || '')
+  const existedUser = await userModel_V2.findOneByEmail(data.email || '')
   if (existedUser) {
     throw new ApiError(StatusCodes.CONFLICT, 'Email already exists!')
   }
@@ -47,7 +47,7 @@ const registerUser = async (data: IUser) => {
 
   console.log('newUser', newUser)
 
-  const registeredUser = await userModel.registerUser(newUser as IUser)
+  const registeredUser = await userModel_V2.registerUser(newUser as IUser)
   if (!registeredUser) {
     throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'User registration failed!')
   }
@@ -73,13 +73,15 @@ const registerUser = async (data: IUser) => {
 }
 
 const login = async (data: IUserLogin) => {
-  const user = await userModel.findOneByEmail(data.email)
+  const user = await userModel_V2.findOneByEmail(data.email)
+
+  console.log('user', user)
 
   if (!user) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Email or password is incorrect!')
   }
 
-  if (!user.isActive) {
+  if (!user.is_active) {
     throw new ApiError(StatusCodes.BAD_REQUEST, 'Your account is not activated!')
   }
 
@@ -101,13 +103,13 @@ const login = async (data: IUserLogin) => {
 
   // * Tạo access token
   const accessToken = JwtProvider.generateToken(
-    { _id: user._id.toString(), email: user.email, role: user.role } as IUser,
+    { _id: user.id.toString(), email: user.email, role: user.role, id: user.id.toString() } as IUser,
     env.ACCESS_TOKEN_SECRET_SIGNATURE || '',
-    env.ACCESS_TOKEN_LIFE || '1d'
+    env.ACCESS_TOKEN_LIFE || '3d'
   )
 
   const refreshToken = JwtProvider.generateToken(
-    { _id: user._id.toString(), email: user.email, role: user.role },
+    { _id: user.id.toString(), email: user.email, role: user.role, id: user.id.toString() } as IUser,
     env.REFRESH_TOKEN_SECRET_SIGNATURE || '',
     env.REFRESH_TOKEN_LIFE || '3d'
   )
@@ -122,14 +124,14 @@ const login = async (data: IUserLogin) => {
 }
 
 const forgotPassword = async (email: string) => {
-  const existedUser = await userModel.findOneByEmail(email || '')
+  const existedUser = await userModel_V2.findOneByEmail(email || '')
   if (!existedUser) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'Email does not exist!')
   }
 
   const forgotPasswordOTP = generateOTP()
 
-  await userModel.updateOneById(existedUser._id, { forgotPasswordOTP })
+  await userModel_V2.updateOneById(existedUser._id, { forgotPasswordOTP })
 
   // * Send verification email
   const customSubject = 'Cake Store: OTP code to reset your password!'
@@ -146,7 +148,7 @@ const forgotPassword = async (email: string) => {
 }
 
 const verifyOTP = async (userId: number, otp: string) => {
-  const user = await userModel.findOneById(userId)
+  const user = await userModel_V2.findOneById(userId)
 
   if (!user) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
@@ -158,7 +160,7 @@ const verifyOTP = async (userId: number, otp: string) => {
 
   const verifyToken = uuidv4()
 
-  await userModel.updateOneById(user._id, { forgotPasswordOTP: '', verifyToken })
+  await userModel_V2.updateOneById(user._id, { forgotPasswordOTP: '', verifyToken })
 
   return { message: 'OTP code is correct!', isCorrect: true, verifyToken }
 }
@@ -169,7 +171,7 @@ const resetPassword = async (data: {
   confirmPassword: string
   verifyToken: string
 }) => {
-  const user = await userModel.findOneById(data.userId)
+  const user = await userModel_V2.findOneById(data.userId)
 
   if (!user) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
@@ -185,13 +187,13 @@ const resetPassword = async (data: {
 
   const newPassword = bcryptjs.hashSync(data.password, 10)
 
-  await userModel.updateOneById(user._id, { password: newPassword, forgotPasswordOTP: '', verifyToken: '' })
+  await userModel_V2.updateOneById(user._id, { password: newPassword, forgotPasswordOTP: '', verifyToken: '' })
 
   return { message: 'Reset password successfully!', isResetPassword: true }
 }
 
 const getAllUsers = async (page: number, limit: number, q: string, type: string) => {
-  const users = await userModel.getAllUsers(page, limit, q, type)
+  const users = await userModel_V2.getAllUsers(page, limit, q, type)
   return {
     users: users?.data.map((user: unknown) => pickUser(user as unknown as IUser)),
     total: users?.total
@@ -199,7 +201,7 @@ const getAllUsers = async (page: number, limit: number, q: string, type: string)
 }
 
 const updateUser = async (id: number, data: Partial<IUser>) => {
-  return pickUser((await userModel.updateOneById(id, data)) as unknown as IUser)
+  return pickUser((await userModel_V2.updateOneById(id, data)) as unknown as IUser)
 }
 
 const changePasswordUser = async (
@@ -216,7 +218,7 @@ const changePasswordUser = async (
     throw new ApiError(StatusCodes.BAD_REQUEST, 'New password and confirm password do not match')
   }
 
-  const user = await userModel.findOneById(userId)
+  const user = await userModel_V2.findOneById(userId)
   if (!user) {
     throw new ApiError(StatusCodes.NOT_FOUND, 'User not found')
   }
@@ -228,12 +230,12 @@ const changePasswordUser = async (
 
   const hashedPassword = await bcryptjs.hash(new_password, 10)
   user.password = hashedPassword
-  await userModel.updateOneById(userId, { password: hashedPassword })
+  await userModel_V2.updateOneById(userId, { password: hashedPassword })
 
   return { message: 'Password changed successfully' }
 }
 
-export const userService = {
+export const userService_V2 = {
   registerUser,
   login,
   forgotPassword,

@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { getDBPostgre } from '~/configs/postgres.js'
-import { IUser } from '~/@types/auth/interface.js'
+import { IUser } from '~/@types/v1/auth/interface.js'
 import { GENDER, USER_ROLES } from '~/utils/constants.js'
 import { handleThrowError } from '~/middlewares/errorHandlingMiddleware.js'
 import { skipPageNumber } from '~/utils/algorithms.js'
@@ -151,7 +151,7 @@ const getAllUsers = async (page: number, limit: number, query: string, type: str
   }
 }
 
-export const userModel = {
+export const userModel_V2 = {
   USER_TABLE_NAME,
   USER_TABLE_SCHEMA,
   registerUser,

@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import ms from 'ms'
-import { userService } from '~/services/v2/userService.js'
+import { userService_V2 } from '~/services/v2/userService.js'
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await userService.login({
+    const result = await userService_V2.login({
       ...req.body,
       userAgent: req.headers['user-agent']
     })
@@ -32,7 +32,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await userService.registerUser(req.body)
+    const user = await userService_V2.registerUser(req.body)
 
     res.status(StatusCodes.CREATED).json({ message: 'Register account successfully!', user })
   } catch (error) {
@@ -53,7 +53,7 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const response = await userService.forgotPassword(req.body.email)
+    const response = await userService_V2.forgotPassword(req.body.email)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
@@ -63,7 +63,7 @@ const forgotPassword = async (req: Request, res: Response, next: NextFunction) =
 
 const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const response = await userService.verifyOTP(req.body.userId, req.body.otp)
+    const response = await userService_V2.verifyOTP(req.body.userId, req.body.otp)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
@@ -73,7 +73,7 @@ const verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
 
 const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const response = await userService.resetPassword(req.body)
+    const response = await userService_V2.resetPassword(req.body)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
@@ -85,7 +85,7 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { page, limit, q, type } = req.query
 
-    const users = await userService.getAllUsers(
+    const users = await userService_V2.getAllUsers(
       parseInt(page as string, 10),
       parseInt(limit as string, 10),
       q as string,
@@ -102,7 +102,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.jwtDecoded as { id: number }
 
-    const response = await userService.updateUser(id, req.body)
+    const response = await userService_V2.updateUser(id, req.body)
 
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
@@ -120,14 +120,14 @@ const changePasswordUser = async (req: Request, res: Response, next: NextFunctio
       return
     }
 
-    const response = await userService.changePasswordUser(userId, old_password, new_password, confirm_password)
+    const response = await userService_V2.changePasswordUser(userId, old_password, new_password, confirm_password)
     res.status(StatusCodes.OK).json(response)
   } catch (error) {
     next(error)
   }
 }
 
-export const userController = {
+export const userController_V2 = {
   login,
   registerUser,
   logout,

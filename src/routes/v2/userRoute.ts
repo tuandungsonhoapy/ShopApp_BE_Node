@@ -1,5 +1,5 @@
 import express from 'express'
-import { userController } from '~/controllers/v2/userController.js'
+import { userController_V2 } from '~/controllers/v2/userController.js'
 import { authMiddleware } from '~/middlewares/authMiddleware.js'
 import { userValidation } from '~/validations/userValidation.js'
 
@@ -149,7 +149,7 @@ const router = express.Router()
  *    404:
  *      description: Not found
  */
-router.route('/login').post(userValidation.login, userController.login)
+router.route('/login').post(userValidation.login, userController_V2.login)
 
 /**
  * @swagger
@@ -250,9 +250,9 @@ router.route('/login').post(userValidation.login, userController.login)
  *    404:
  *     description: Not found
  */
-router.route('/register').post(userValidation.registerUser, userController.registerUser)
+router.route('/register').post(userValidation.registerUser, userController_V2.registerUser)
 
-router.route('/logout').post(userController.logout)
+router.route('/logout').post(userController_V2.logout)
 
 /**
  * @swagger
@@ -295,7 +295,7 @@ router.route('/logout').post(userController.logout)
  *      404:
  *        description: Not found
  */
-router.route('/forgot-password').post(userValidation.forgotPassword, userController.forgotPassword)
+router.route('/forgot-password').post(userValidation.forgotPassword, userController_V2.forgotPassword)
 
 /**
  * @swagger
@@ -340,7 +340,7 @@ router.route('/forgot-password').post(userValidation.forgotPassword, userControl
  *      404:
  *        description: Not found
  */
-router.route('/verify-otp').post(userValidation.verifyOTP, userController.verifyOTP)
+router.route('/verify-otp').post(userValidation.verifyOTP, userController_V2.verifyOTP)
 
 /**
  * @swagger
@@ -389,9 +389,9 @@ router.route('/verify-otp').post(userValidation.verifyOTP, userController.verify
  *      404:
  *        description: Not found
  */
-router.route('/reset-password').post(userValidation.resetPassword, userController.resetPassword)
+router.route('/reset-password').post(userValidation.resetPassword, userController_V2.resetPassword)
 
-router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAllUsers)
+router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController_V2.getAllUsers)
 
 /**
  * @swagger
@@ -462,7 +462,7 @@ router.route('/').get(authMiddleware.isAuthorizedAndAdmin, userController.getAll
  *            schema:
  *              $ref: '#/components/schemas/User'
  */
-router.route('/').put(authMiddleware.isAuthorized, userValidation.updateUser, userController.updateUser)
+router.route('/').put(authMiddleware.isAuthorized, userValidation.updateUser, userController_V2.updateUser)
 
 /**
  * @swagger
@@ -517,6 +517,6 @@ router.route('/').put(authMiddleware.isAuthorized, userValidation.updateUser, us
  */
 router
   .route('/change-password')
-  .post(authMiddleware.isAuthorized, userValidation.changePassword, userController.changePasswordUser)
+  .post(authMiddleware.isAuthorized, userValidation.changePassword, userController_V2.changePasswordUser)
 
 export const userRoute = router
