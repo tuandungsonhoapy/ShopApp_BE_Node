@@ -52,7 +52,7 @@ const ORDER_COLLECTION_SCHEMA = Joi.object({
   vouchersUsed: Joi.array()
     .items(
       Joi.object({
-        voucherId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required(),
+        voucherId: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).optional(),
         code: Joi.string().required(),
         discountAmount: Joi.number().min(0).required(),
         maxDiscount: Joi.number().min(0).optional(),

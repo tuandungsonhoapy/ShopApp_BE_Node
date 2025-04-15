@@ -26,7 +26,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
           price: Joi.number().min(0).required(),
           total: Joi.number().min(0).required(),
           size: Joi.string().max(20).default(''),
-          note: Joi.string().default('')
+          note: Joi.string().optional().default('')
         })
       )
       .default([]),
