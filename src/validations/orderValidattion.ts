@@ -49,7 +49,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
         })
       )
       .min(1)
-      .required()
+      .optional()
   })
 
   try {
