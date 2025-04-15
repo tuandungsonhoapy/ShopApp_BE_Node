@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { Order } from '~/@types/order/interface.js'
-import { orderService } from '~/services/orderService.js'
+import { orderService } from '~/services/v1/orderService.js'
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
