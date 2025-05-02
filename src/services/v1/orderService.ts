@@ -2,6 +2,7 @@ import { ObjectId, AnyBulkWriteOperation } from 'mongodb'
 import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/v1/order/interface.js'
 import { bulkUpdateProducts, getProductsByIds, orderModel } from '~/models/v1/orderModel.js'
 import { ORDER_STATUS } from '~/utils/constants.js'
+import { sendOrderToKafka } from '~/configs/kafka.js'
 
 const getOrders = async (page: number, limit: number, query: string, userId: string, status: string) => {
   return await orderModel.getOrders(page, limit, query, userId, status)
@@ -36,12 +37,12 @@ export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCan
 }
 
 const create = async (data: Order) => {
+  await sendOrderToKafka(data)
   const orderResponse = await orderModel.create(data)
 
   if (!orderResponse) throw new Error('Cannot create order')
 
   await updateProductStock(data?.orderDetails)
-
   return orderResponse
 }
 

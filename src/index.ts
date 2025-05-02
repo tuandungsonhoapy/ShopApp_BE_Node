@@ -29,7 +29,7 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: isProduction ? 'https://shopapp-be-node.onrender.com/api/v1' : 'http://localhost:8081/api/v1',
+        url: isProduction ? 'https://shopapp-be-node.onrender.com/api/v1' : 'http://localhost:3000/api/v1',
         description: isProduction ? 'Production server' : 'Development server'
       }
     ]
@@ -77,15 +77,16 @@ const START_SERVER = () => {
     testMessageSocket(socket)
   })
 
-  const PORT = process.env.PORT || 8081
-
+  const PORT = process.env.PORT || 3000
   if (env.BUILD_MODE === 'production') {
     server.listen(PORT, () => {
       console.log(`Server is running at port ${PORT}/api/v1`)
     })
   } else {
-    const port: number = Number.parseInt(env.APP_PORT || '8081')
-    server.listen(port, env.APP_HOST || '', () => {
+    const port: number = Number.parseInt(env.APP_PORT || '3000')
+
+    // server.listen(port, env.APP_HOST || '', () => {
+    server.listen(PORT, Number(3000), () => {
       console.log(`Server is running at http://${env.APP_HOST}:${port}/api/v1`)
     })
   }
@@ -101,7 +102,7 @@ const START_SERVER = () => {
 ;(async () => {
   try {
     await connectDB()
-    await connectDBPostgre()
+    // await connectDBPostgre()
     console.log('Connected to MongoDB successfully!')
     START_SERVER()
   } catch (error) {
