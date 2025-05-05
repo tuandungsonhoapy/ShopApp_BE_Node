@@ -7,7 +7,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { _id: userId } = req.jwtDecoded as { _id: string }
 
-    const result = await orderService.create({
+    const result = await orderService.generateOrders({
       ...req.body,
       userId
     } as Order)

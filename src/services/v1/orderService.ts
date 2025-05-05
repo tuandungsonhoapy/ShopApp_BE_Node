@@ -36,14 +36,33 @@ export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCan
   await bulkUpdateProducts(bulkOperations)
 }
 
-const create = async (data: Order) => {
-  await sendOrderToKafka(data)
-  const orderResponse = await orderModel.create(data)
+const generateOrders = async (dataWithoutId: Order) => {
+  const promises = []
 
-  if (!orderResponse) throw new Error('Cannot create order')
+  for (let i = 1; i <= 1000; i++) {
+    const partition = Math.floor((i - 1) / 300)
+    const order = { orderId: i.toString(), ...dataWithoutId }
+    console.log('partition', partition)
+    promises.push(create(order, partition))
+  }
 
-  await updateProductStock(data?.orderDetails)
-  return orderResponse
+  await Promise.all(promises)
+  console.log('✅ Đã tạo xong 1000 order song song')
+}
+
+const create = async (data: Order, partition: number) => {
+  const startTime = Date.now()
+  await sendOrderToKafka(data, partition)
+
+  const endTime = Date.now()
+  console.log(`🕒 sendOrderToKafka took ${endTime - startTime} ms`)
+
+  // const orderResponse = await orderModel.create(data)
+
+  // if (!orderResponse) throw new Error('Cannot create order')
+
+  // await updateProductStock(data?.orderDetails)
+  return data
 }
 
 const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams) => {
@@ -57,5 +76,6 @@ const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams
 export const orderService = {
   getOrders,
   create,
+  generateOrders,
   updateOrderStatus
 }
