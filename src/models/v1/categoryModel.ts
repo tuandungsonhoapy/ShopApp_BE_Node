@@ -92,8 +92,23 @@ const getAll = async (page: number, limit: number, query: string) => {
 
 const getOneById = async (id: string) => {
   try {
-    const objectId = ObjectId.createFromHexString(id)
-    return await getDB().collection(CATEGORY_COLLECTION_NAME).findOne({ _id: objectId })
+    const objectId = new ObjectId(id)
+    const result = await getDB()
+      .collection(CATEGORY_COLLECTION_NAME)
+      .aggregate([
+        { $match: { _id: objectId } },
+        {
+          $lookup: {
+            from: 'products',
+            localField: '_id',
+            foreignField: 'categoryId',
+            as: 'products'
+          }
+        }
+      ])
+      .toArray()
+
+    return result[0] || null // Trả về document đầu tiên (hoặc null nếu không tìm thấy)
   } catch (error) {
     handleThrowError(error)
   }

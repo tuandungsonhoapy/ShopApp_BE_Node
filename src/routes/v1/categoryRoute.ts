@@ -13,7 +13,7 @@ const router = express.Router()
  *    type: object
  *    properties:
  *     _id:
- *      type: MongoDBObjectId
+ *      type: string
  *      example: 612f3b3b7b8b3b0015b3b3b3
  *     name:
  *      type: string
@@ -123,13 +123,12 @@ export const categoryRoute = router
  *   tags:
  *    - Categories
  *   parameters:
- *    - in: path
- *      name: id
- *      required: true
- *      description: ID of the category
- *      schema:
- *       type: MongoDBObjectId
- *       example: 612f3b3b7b8b3b0015b3b3b3
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *        description: The ID of the category
  *   responses:
  *    200:
  *     description: Get a category successfully
