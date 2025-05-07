@@ -1,5 +1,6 @@
 import { ObjectId, AnyBulkWriteOperation } from 'mongodb'
 import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/v1/order/interface.js'
+import { sendMessage } from '~/configs/kafka-producer.js'
 import { bulkUpdateProducts, getProductsByIds, orderModel } from '~/models/v1/orderModel.js'
 import { ORDER_STATUS } from '~/utils/constants.js'
 
@@ -36,6 +37,8 @@ export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCan
 }
 
 const create = async (data: Order) => {
+  // await sendOrder(data)
+
   const orderResponse = await orderModel.create(data)
 
   if (!orderResponse) throw new Error('Cannot create order')

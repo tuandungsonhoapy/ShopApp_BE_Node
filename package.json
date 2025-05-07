@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf ./dist",
     "build": "npm run clean && tsc && tsc-alias",
-    "start": "cross-env BUILD_MODE=production node ./dist/index.js",
+    "start": "cross-env KAFKAJS_NO_PARTITIONER_WARNING=1 BUILD_MODE=production node ./dist/index.js",
     "dev": "cross-env BUILD_MODE=dev nodemon --exec tsx src/index.ts",
     "lint": "eslint . --report-unused-disable-directives",
     "lint:fix": "eslint . --fix",
@@ -55,6 +55,7 @@
     "http-status-codes": "^2.3.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
     "lodash": "^4.17.21",
     "mongodb": "^6.10.0",
     "mongoose": "^8.10.0",

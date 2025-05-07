@@ -17,6 +17,9 @@ import { testMessageSocket } from '~/sockets/testMessageSocket.js'
 import { APIs_V1 } from '~/routes/v1/index.js'
 import { connectDBPostgre } from '~/configs/postgres.js'
 import { APIs_V2 } from '~/routes/v2/index.js'
+import { connectProducer, sendMessage } from '~/configs/kafka-producer.js'
+import { Order } from '~/@types/v1/order/interface.js'
+import { OrderKafka } from '~/@types/v2/order/interface.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -102,7 +105,20 @@ const START_SERVER = () => {
   try {
     await connectDB()
     await connectDBPostgre()
+    await connectProducer()
     console.log('Connected to MongoDB successfully!')
+
+    const sampleOrder: OrderKafka = {
+      orderId: 'ORD124',
+      productId: 'PROD123',
+      quantity: 5,
+      price: 30,
+      timestamp: Date.now(), // 07/05/2025 00:00:00 (milliseconds)
+      customerId: 'CUST456'
+    }
+
+    await sendMessage('order', sampleOrder)
+
     START_SERVER()
   } catch (error) {
     console.error('Error connecting to MongoDB:', error)
