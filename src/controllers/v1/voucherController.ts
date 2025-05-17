@@ -5,7 +5,7 @@ import { voucherService } from '~/services/v1/voucherService.js'
 const getAllVouchers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const vouchers = await voucherService.getAllVouchers()
-    res.status(StatusCodes.OK).json(vouchers)
+    res.status(StatusCodes.OK).json({ message: 'Get all vouchers succesfully!', vouchers })
   } catch (error) {
     next(error)
   }
@@ -13,12 +13,8 @@ const getAllVouchers = async (req: Request, res: Response, next: NextFunction) =
 
 const getVoucherById = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { id } = req.params
-    const voucher = await voucherService.getVoucherById(id)
-    if (!voucher) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: 'Voucher not found' })
-    }
-    res.status(StatusCodes.OK).json(voucher)
+    const voucher = await voucherService.getVoucherById(req.params.id)
+    res.status(StatusCodes.OK).json({ message: 'Get voucher by id succesfully!', voucher })
   } catch (error) {
     next(error)
   }
@@ -27,7 +23,6 @@ const getVoucherById = async (req: Request, res: Response, next: NextFunction) =
 const createVoucher = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const voucher = await voucherService.createVoucher(req.body)
-    console.log(req.body)
     res.status(StatusCodes.CREATED).json({ message: 'Voucher created successfully!', voucher })
   } catch (error) {
     next(error)
@@ -37,10 +32,6 @@ const createVoucher = async (req: Request, res: Response, next: NextFunction) =>
 const updateVoucher = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const updatedVoucher = await voucherService.updateVoucher({ ...req.body, _id: req.params.id })
-
-    if (!updatedVoucher) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: 'Voucher not found' })
-    }
 
     res.status(StatusCodes.OK).json({ message: 'Voucher updated successfully!', updatedVoucher })
   } catch (error) {
@@ -52,10 +43,6 @@ const deleteVoucher = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const { id } = req.params
     const deletedVoucher = await voucherService.deleteVoucher(id)
-
-    if (!deletedVoucher) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: 'Voucher not found' })
-    }
 
     res.status(StatusCodes.OK).json({ message: 'Voucher deleted successfully!', deletedVoucher })
   } catch (error) {

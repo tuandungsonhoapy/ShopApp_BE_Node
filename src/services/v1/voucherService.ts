@@ -6,7 +6,6 @@ import { getDB } from '~/configs/mongodb.js'
 
 const getAllVouchers = async () => {
   const vouchers = getDB().collection(voucherModel.VOUCHER_COLLECTION_NAME).find({ _destroy: false }).toArray()
-
   return vouchers
 }
 

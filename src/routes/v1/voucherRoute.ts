@@ -152,7 +152,7 @@ router.get('/', authMiddleware.isAuthorizedAndAdmin, voucherController.getAllVou
  *      500:
  *        description: Internal server error
  */
-router.get('/:id', authMiddleware.isAuthorized, voucherController.getVoucherById)
+router.get('/:id', authMiddleware.isAuthorizedAndAdmin, voucherController.getVoucherById)
 
 /**
  * @swagger
@@ -238,64 +238,21 @@ router.get('/:id', authMiddleware.isAuthorized, voucherController.getVoucherById
  *                  type: string
  *                  example: "Voucher created successfully"
  *                data:
- *                  type: object
- *                  properties:
- *                    _id:
- *                      type: string
- *                      example: "65f8b2c4e5a7f9b123456789"
- *                    code:
- *                      type: string
- *                      example: "SUMMER2025"
- *                    description:
- *                      type: string
- *                      example: "Discount for summer sale"
- *                    discountType:
- *                      type: string
- *                      example: "percent"
- *                    discountValue:
- *                      type: number
- *                      example: 10
- *                    minOrderValue:
- *                      type: number
- *                      example: 500000
- *                    maxDiscount:
- *                      type: number
- *                      example: 100000
- *                    expirationDate:
- *                      type: string
- *                      format: date-time
- *                      example: "2025-12-31T23:59:59.000Z"
- *                    isActive:
- *                      type: boolean
- *                      example: true
- *                    usageLimit:
- *                      type: number
- *                      example: 1000
- *                    usageCount:
- *                      type: number
- *                      example: 0
- *                    applicableCategories:
- *                      type: array
- *                      items:
- *                        type: string
- *                        example: "67b2949737b7d0fab7f203b5"
- *                    applicableProducts:
- *                      type: array
- *                      items:
- *                        type: string
- *                        example: "67b0b2c19f1f5fb97f386dfb"
- *                    createdAt:
- *                        type: string
- *                        format: date-time
- *                        example: "2024-03-01T10:00:00.000Z"
- *                    updatedAt:
- *                        type: string
- *                        format: date-time
- *                        example: null
+ *                  $ref: '#/components/schemas/Voucher'
  *      400:
  *        description: Bad request (Validation error)
  *      401:
  *        description: Unauthorized
+ *      422:
+ *        description: Validation error
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: "Validation failed"
  *      500:
  *        description: Internal server error
  */
@@ -376,10 +333,20 @@ router.post('/', authMiddleware.isAuthorizedAndAdmin, voucherValidation.create, 
  *        description: Unauthorized
  *      404:
  *        description: Voucher not found
+ *      422:
+ *        description: Validation error
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: "Validation failed"
  *      500:
  *        description: Internal server error
  */
-router.put('/:id', authMiddleware.isAuthorizedAndAdmin, voucherController.updateVoucher)
+router.put('/:id', authMiddleware.isAuthorizedAndAdmin, voucherValidation.update, voucherController.updateVoucher)
 
 /**
  * @swagger
