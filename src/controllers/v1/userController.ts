@@ -127,6 +127,18 @@ const changePasswordUser = async (req: Request, res: Response, next: NextFunctio
   }
 }
 
+const getUserById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+
+    const user = await userService.getUserById(id)
+
+    res.status(StatusCodes.OK).json(user)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const userController = {
   login,
   registerUser,
@@ -136,5 +148,6 @@ export const userController = {
   resetPassword,
   getAllUsers,
   updateUser,
-  changePasswordUser
+  changePasswordUser,
+  getUserById
 }

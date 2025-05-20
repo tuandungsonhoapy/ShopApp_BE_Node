@@ -190,7 +190,7 @@ const router = express.Router()
  *     description: Internal server error
  */
 
-router.route('/').get(authMiddleware.isAuthorizedAndAdmin, orderController.getOrders)
+router.route('/').get(authMiddleware.isAuthorized, orderController.getOrders)
 
 /**
  * @swagger
@@ -376,5 +376,7 @@ router
  *        description: Internal server error
  */
 // router.route('/:id').delete(authMiddleware.isAuthorizedAndAdmin, categoryController.deleteOneById)
+
+router.route('/:id').get(authMiddleware.isAuthorized, orderController.getOrderById)
 
 export const orderRoute = router

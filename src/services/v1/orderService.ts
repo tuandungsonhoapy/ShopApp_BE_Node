@@ -1,5 +1,6 @@
 import { ObjectId, AnyBulkWriteOperation } from 'mongodb'
 import { Order, OrderDetail, UpdateOrderStatusParams } from '~/@types/order/interface.js'
+import { AuthApi } from '~/apis/auth/index.js'
 import { bulkUpdateProducts, getProductsByIds, orderModel } from '~/models/v1/orderModel.js'
 import { ORDER_STATUS } from '~/utils/constants.js'
 
@@ -36,6 +37,8 @@ export const updateProductStock = async (orderDetails: OrderDetail[] = [], isCan
 }
 
 const create = async (data: Order) => {
+  const userResponse = await AuthApi.verifyUser(data.userId.toString())
+  if (!userResponse) throw new Error('Cannot verify user')
   const orderResponse = await orderModel.create(data)
 
   if (!orderResponse) throw new Error('Cannot create order')
@@ -53,8 +56,15 @@ const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams
   return updateOrderResponse
 }
 
+const getOrderById = async (orderId: string) => {
+  const orderResponse = await orderModel.getOneById(orderId)
+  if (!orderResponse) throw new Error('Cannot get order')
+  return orderResponse
+}
+
 export const orderService = {
   getOrders,
   create,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderById
 }

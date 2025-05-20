@@ -280,10 +280,23 @@ const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams
   return { message: 'Order status updated successfully', newStatus, result: result }
 }
 
+const getOneById = async (orderId: string) => {
+  const order = await getDB()
+    .collection<Order>(ORDER_COLLECTION_NAME)
+    .findOne({ _id: new ObjectId(orderId), _destroy: false })
+
+  if (!order) {
+    throw new Error('Order not found')
+  }
+
+  return order
+}
+
 export const orderModel = {
   create,
   getOrders,
   updateOrderStatus,
   ORDER_COLLECTION_NAME,
-  ORDER_COLLECTION_SCHEMA
+  ORDER_COLLECTION_SCHEMA,
+  getOneById
 }

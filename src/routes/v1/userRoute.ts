@@ -519,4 +519,6 @@ router
   .route('/change-password')
   .post(authMiddleware.isAuthorized, userValidation.changePassword, userController.changePasswordUser)
 
+router.route('/:id').get(authMiddleware.isAuthorized, userController.getUserById)
+
 export const userRoute = router

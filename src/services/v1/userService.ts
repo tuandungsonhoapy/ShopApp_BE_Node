@@ -246,6 +246,14 @@ const changePasswordUser = async (
   return { message: 'Password changed successfully' }
 }
 
+const getUserById = async (id: string) => {
+  const user = await userModel.findOneById(id)
+  if (!user) {
+    throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
+  }
+  return pickUser(user as unknown as IUser)
+}
+
 export const userService = {
   registerUser,
   login,
@@ -254,5 +262,6 @@ export const userService = {
   resetPassword,
   getAllUsers,
   updateUser,
-  changePasswordUser
+  changePasswordUser,
+  getUserById
 }
