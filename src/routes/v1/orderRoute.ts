@@ -377,4 +377,6 @@ router
  */
 // router.route('/:id').delete(authMiddleware.isAuthorizedAndAdmin, categoryController.deleteOneById)
 
+router.route('/:id').get(authMiddleware.isAuthorized, orderController.getOrderById)
+
 export const orderRoute = router

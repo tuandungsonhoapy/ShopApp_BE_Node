@@ -53,8 +53,15 @@ const updateOrderStatus = async ({ orderId, newStatus }: UpdateOrderStatusParams
   return updateOrderResponse
 }
 
+const getOrderById = async (orderId: string) => {
+  const orderResponse = await orderModel.getOneById(orderId)
+  if (!orderResponse) throw new Error('Cannot get order')
+  return orderResponse
+}
+
 export const orderService = {
   getOrders,
   create,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderById
 }

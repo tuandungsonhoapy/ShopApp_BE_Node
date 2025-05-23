@@ -49,8 +49,19 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
   }
 }
 
+const getOrderById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id: orderId } = req.params
+    const result = await orderService.getOrderById(orderId)
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) {
+    next(error)
+  }
+}
+
 export const orderController = {
   create,
   getOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderById
 }
