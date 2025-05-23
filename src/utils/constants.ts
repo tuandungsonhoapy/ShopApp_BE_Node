@@ -4,7 +4,8 @@ export const WHITELIST_DOMAINS: Array<string> = [
   'http://localhost:8081',
   'http://localhost:5173',
   'https://shopapp-be-node.onrender.com',
-  'https://react-js-code-base-nlul.vercel.app'
+  'https://react-js-code-base-nlul.vercel.app',
+  'https://cake-store-fe-git-master-tuan-dungs-projects.vercel.app/'
 ]
 
 export const ORDER_STATUS = {
