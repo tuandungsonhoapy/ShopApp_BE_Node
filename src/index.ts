@@ -52,6 +52,14 @@ const START_SERVER = () => {
     next()
   })
 
+  app.get('/api/v1/healthcheck', (req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      message: 'Service is healthy',
+      timestamp: new Date().toISOString()
+    })
+  })
+
   // * Serve the Swagger UI
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification))
 
